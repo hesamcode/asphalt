@@ -1,0 +1,3439 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, orientation=landscape"
+    />
+    <title>Racing Game - Nitro Limited Edition</title>
+    <style>
+      * {
+        user-select: none;
+        touch-action: none;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0a0a1a;
+        overflow: hidden;
+        font-family: "Segoe UI", "Poppins", system-ui, sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Main Menu Styles - حرفه‌ای موبایلی */
+      .main-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 30% 20%, #0a0a2a, #050510);
+        z-index: 1000;
+        overflow: hidden;
+      }
+
+      /* دکمه فول اسکرین در بالا سمت چپ */
+      .fullscreen-menu-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 170, 68, 0.8);
+        color: #ffaa44;
+        font-size: 1.4rem;
+        cursor: pointer;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .fullscreen-menu-btn:hover {
+        transform: scale(1.05);
+        background: rgba(255, 170, 68, 0.3);
+      }
+
+      /* نمایش سکه در بالای صفحه سمت راست */
+      .menu-coins {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 8px 18px;
+        border-radius: 40px;
+        border: 1px solid rgba(255, 200, 100, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1100;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .coin-icon {
+        font-size: 1.3rem;
+        filter: drop-shadow(0 0 5px #ffaa44);
+      }
+
+      .coin-amount {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ffdd44;
+        font-family: monospace;
+        letter-spacing: 1px;
+      }
+
+      /* نمایش ماشین در وسط صفحه */
+      .car-showcase-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 500px;
+        aspect-ratio: 4 / 3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #carPreviewCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+      }
+
+      /* دکمه استارت در گوشه راست پایین */
+      .menu-start-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 16px 40px;
+        font-size: 1.3rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #ff5533, #ff2244);
+        border: none;
+        border-radius: 50px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 25px rgba(255, 68, 68, 0.5);
+        z-index: 1100;
+        font-family: "Segoe UI", system-ui;
+        letter-spacing: 2px;
+      }
+
+      .menu-start-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 35px rgba(255, 68, 68, 0.8);
+      }
+
+      .menu-start-btn:active {
+        transform: scale(0.98);
+      }
+
+      /* دکمه ارتقا در پایین سمت چپ */
+      .upgrade-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #3a2a6a, #1a1a4a);
+        border: 2px solid #aa88ff;
+        border-radius: 50px;
+        color: #ccaaff;
+        cursor: pointer;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "Segoe UI", system-ui;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(170, 136, 255, 0.3);
+      }
+
+      .upgrade-btn:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #4a3a7a, #2a2a5a);
+        box-shadow: 0 0 25px rgba(170, 136, 255, 0.5);
+      }
+
+      .upgrade-btn:active {
+        transform: scale(0.98);
+      }
+
+      .upgrade-btn.maxed {
+        opacity: 0.6;
+        filter: grayscale(0.3);
+        pointer-events: none;
+      }
+
+      .upgrade-icon {
+        font-size: 1.3rem;
+      }
+
+      .upgrade-text {
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .upgrade-level {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #ffcc88;
+      }
+
+      /* پاپ آپ تایید ارتقا */
+      .confirm-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .confirm-box {
+        background: linear-gradient(145deg, #1a1a2e, #0a0a18);
+        padding: 25px 30px;
+        border-radius: 30px;
+        text-align: center;
+        border: 2px solid #aa88ff;
+        max-width: 320px;
+      }
+
+      .confirm-box h3 {
+        color: #ffcc88;
+        margin-bottom: 15px;
+      }
+
+      .confirm-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .confirm-yes {
+        background: #44aa44;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .confirm-no {
+        background: #aa4444;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      /* دکمه ریست کامل */
+      .reset-all-btn {
+        position: fixed;
+        top: 20px;
+        left: 90px; /* کنار دکمه ارتقا */
+        padding: 14px 24px;
+        background: linear-gradient(135deg, #6a2a2a, #4a1a1a);
+        border: 2px solid #ff6666;
+        border-radius: 50px;
+        color: #ffaaaa;
+        cursor: pointer;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "Segoe UI", system-ui;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(255, 102, 102, 0.3);
+      }
+
+      .reset-all-btn:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #7a3a3a, #5a2a2a);
+        box-shadow: 0 0 25px rgba(255, 102, 102, 0.5);
+      }
+
+      .reset-all-btn:active {
+        transform: scale(0.98);
+      }
+
+      .reset-icon {
+        font-size: 1.1rem;
+      }
+
+      .reset-text {
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      /* پاپ آپ ریست */
+      .reset-confirm-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .reset-confirm-box {
+        background: linear-gradient(145deg, #1a1a2e, #0a0a18);
+        padding: 25px 30px;
+        border-radius: 30px;
+        text-align: center;
+        border: 2px solid #ff6666;
+        max-width: 350px;
+      }
+
+      .reset-confirm-box h3 {
+        color: #ff8888;
+        margin-bottom: 15px;
+      }
+
+      .reset-confirm-box p {
+        color: #dddddd;
+        margin: 10px 0;
+      }
+
+      .reset-warning {
+        color: #ff8888;
+        font-size: 0.85rem;
+        margin-top: 15px;
+      }
+
+      .reset-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .reset-yes {
+        background: #ff4444;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .reset-no {
+        background: #444444;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      /* انیمیشن برای ماشین */
+      @keyframes carFloat {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* حذف استایل‌های قبلی مربوط به منو */
+      .game-ui-hidden {
+        display: none !important;
+      }
+
+      /* Back to menu button in pause */
+      .back-to-menu-btn {
+        background: #6a3ea5 !important;
+        border: 1px solid #aa88ff !important;
+      }
+
+      .back-to-menu-btn:hover {
+        background: #7d4db8 !important;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      /* Stats Panel */
+      .stats-panel {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        right: auto;
+        transform: none;
+        display: flex;
+        gap: 8px;
+        background: rgba(10, 10, 20, 0.85);
+        backdrop-filter: blur(12px);
+        padding: 4px 10px;
+        border-radius: 25px;
+        z-index: 100;
+        pointer-events: none;
+        font-family: "Courier New", monospace;
+        border: 1px solid rgba(255, 180, 80, 0.4);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+        color: #aaa;
+      }
+
+      .stat-value {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #ffdd88;
+      }
+
+      .best-value {
+        color: #88ffaa;
+      }
+
+      /* Nitro Button */
+      .nitro-button {
+        position: fixed;
+        bottom: 35px;
+        right: 35px;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #ff4400, #ff8866);
+        border: 3px solid #ffaa44;
+        color: white;
+        font-weight: bold;
+        font-size: 0.7rem;
+        z-index: 200;
+        cursor: pointer;
+        touch-action: none;
+        box-shadow: 0 0 15px rgba(255, 68, 0, 0.5);
+        transition: transform 0.05s linear;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .nitro-button:active {
+        transform: scale(0.95);
+      }
+
+      .nitro-button.disabled {
+        opacity: 0.5;
+        filter: grayscale(0.3);
+        transform: none;
+        pointer-events: none;
+      }
+
+      .nitro-icon {
+        font-size: 1.1rem;
+        z-index: 2;
+      }
+
+      .nitro-text {
+        font-size: 0.55rem;
+        z-index: 2;
+      }
+
+      /* Nitro Progress Border */
+      .nitro-progress {
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        border-radius: 50%;
+        background: none;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Fullscreen Button */
+      .fullscreen-btn {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        border: 2px solid #ffaa44;
+        color: #ffaa44;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 150;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-family: monospace;
+      }
+
+      .fullscreen-btn:hover {
+        transform: scale(1.05);
+        background: rgba(255, 170, 68, 0.3);
+      }
+
+      .pause-btn {
+        position: fixed;
+        top: 12px;
+        right: 58px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        border: 2px solid #ffaa44;
+        color: #ffaa44;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 150;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-family: monospace;
+      }
+
+      .pause-btn:hover {
+        transform: scale(1.05);
+        background: rgba(255, 170, 68, 0.3);
+      }
+
+      /* Message Overlay */
+      .message-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.94);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 300;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .message-box {
+        background: linear-gradient(145deg, #1a1a2e, #0a0a18);
+        padding: 20px 30px;
+        border-radius: 40px;
+        text-align: center;
+        border: 2px solid #ffcc66;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        animation: pop 0.4s ease;
+        min-width: 320px;
+        max-width: 90vw;
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+
+      .message-box h1 {
+        font-size: 1.8rem;
+        margin: 0 0 10px;
+        background: linear-gradient(45deg, #ffcc66, #ff8866);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .leaderboard {
+        margin: 15px 0;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 24px;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .leaderboard-header {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        background: rgba(255, 200, 100, 0.2);
+        padding: 10px 12px;
+        font-weight: bold;
+        color: #ffcc88;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #ffcc6633;
+      }
+
+      .leaderboard-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        padding: 8px 12px;
+        color: #ddd;
+        font-size: 0.85rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .leaderboard-row.winner {
+        background: rgba(255, 200, 100, 0.15);
+        color: #ffcc66;
+        font-weight: bold;
+      }
+
+      .rank-icon {
+        font-weight: bold;
+      }
+
+      .rank-1 {
+        color: #ffd700;
+      }
+      .rank-2 {
+        color: #c0c0c0;
+      }
+      .rank-3 {
+        color: #cd7f32;
+      }
+
+      .restart-btn,
+      .download-btn,
+      .resume-btn {
+        margin-top: 20px;
+        padding: 10px 28px;
+        font-size: 1rem;
+        font-weight: bold;
+        background: #ff5533;
+        border: none;
+        border-radius: 50px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .restart-btn:hover {
+        transform: scale(1.05);
+        background: #ff7744;
+      }
+
+      .download-btn,
+      .resume-btn {
+        background: #3a6ea5 !important;
+        border: 1px solid #88ccff !important;
+      }
+
+      .download-btn:hover,
+      .resume-btn:hover {
+        background: #4d7db8 !important;
+        transform: scale(1.05);
+      }
+
+      /* Countdown Overlay */
+      .countdown-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        pointer-events: none;
+      }
+
+      .countdown-number {
+        font-size: 8rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #ffcc44, #ff8844);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 30px rgba(255, 136, 68, 0.5);
+        animation: countdownPulse 0.6s ease-out;
+      }
+
+      .countdown-go {
+        font-size: 5rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #44ff88, #88ff44);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 30px rgba(68, 255, 136, 0.5);
+        animation: goPulse 0.4s ease-out;
+      }
+
+      /* Orientation Warning */
+      .orientation-warning {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 1.2rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes countdownPulse {
+        0% {
+          transform: scale(0.3);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes goPulse {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- صفحه اصلی (Main Menu) -->
+    <div id="mainMenu" class="main-menu">
+      <!-- دکمه فول اسکرین در بالا سمت چپ -->
+      <button class="fullscreen-menu-btn" id="fullscreenMenuBtn">⛶</button>
+
+      <!-- نمایش سکه در بالای صفحه سمت راست -->
+      <div class="menu-coins">
+        <span class="coin-icon">🪙</span>
+        <span class="coin-amount" id="menuCoinDisplay">0</span>
+      </div>
+
+      <!-- نمایش ماشین در وسط صفحه -->
+      <div class="car-showcase-center">
+        <canvas id="carPreviewCanvas" width="400" height="300"></canvas>
+      </div>
+
+      <!-- دکمه ارتقا در پایین سمت چپ -->
+      <button class="upgrade-btn" id="upgradeBtn">
+        <span class="upgrade-icon">⚡</span>
+        <span class="upgrade-text">UPGRADE</span>
+        <span class="upgrade-level" id="upgradeLevel">LVL 1</span>
+      </button>
+
+      <!-- دکمه ریست کامل در پایین سمت چپ (کنار دکمه ارتقا) -->
+      <button class="reset-all-btn" id="resetAllBtn">
+        <span class="reset-icon">🗑️</span>
+        <span class="reset-text">RESET ALL</span>
+      </button>
+
+      <!-- دکمه استارت در گوشه راست پایین -->
+      <button class="menu-start-btn" id="startGameBtn">START RACE</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div class="stats-panel">
+      <div class="stat">
+        <div class="stat-label">🏁 LAP</div>
+        <div class="stat-value" id="lapCounter">0/3</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">⏱️ TIME</div>
+        <div class="stat-value" id="lapTimeDisplay">0.00</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">🏆 BEST</div>
+        <div class="stat-value best-value" id="bestTimeDisplay">0.00</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">🏁 FINISHED</div>
+        <div class="stat-value" id="finishedCountDisplay">0/4</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">🪙 COINS</div>
+        <div class="stat-value" id="coinDisplay" style="color: #ffdd44">0</div>
+      </div>
+    </div>
+
+    <button class="nitro-button" id="nitroButton">
+      <span class="nitro-icon">🔥</span>
+      <span class="nitro-text">NITRO</span>
+      <div class="nitro-progress"></div>
+    </button>
+
+    <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
+    <button class="pause-btn" id="pauseBtn">⏸</button>
+
+    <div class="orientation-warning" id="orientationWarning">
+      📱 لطفاً گوشی را به حالت افقی بچرخانید<br />
+      Please rotate to landscape
+    </div>
+
+    <script>
+      (function () {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let W, H;
+
+        // Track settings
+        const TRACK_WIDTH = 64;
+        let trackPoints = [];
+        let trackLeftBound = [];
+        let trackRightBound = [];
+        let finishLineStart = null,
+          finishLineEnd = null;
+
+        // Player
+        let player = {
+          x: 0,
+          y: 0,
+          angle: 0,
+          velX: 0,
+          velY: 0,
+          radius: 12,
+          lap: 0,
+          finished: false,
+          bestLap: Infinity,
+          currentLapTime: 0,
+          currentLapStart: 0,
+          totalTime: 0,
+          finishedPosition: null,
+          lastGateSide: 0,
+          stopPosition: null,
+          nitroEffect: false,
+        };
+        let playerCoins = 0;
+
+        // Bots
+        let bots = [];
+        const BOT_COUNT = 3;
+        const TOTAL_RACERS = 4;
+        const BOT_NAMES = ["BLUE", "GREEN", "ORANGE"];
+        const BOT_COLORS = ["#44aaff", "#44ffaa", "#ff8844"];
+        let botCoins = [0, 0, 0]; // سکه برای هر ربات
+
+        const COIN_REWARDS = {
+          1: 500, // مقام اول
+          2: 300, // مقام دوم
+          3: 200, // مقام سوم
+          4: 100, // مقام چهارم
+        };
+
+        let currentRaceCoins = 0; // سکه‌های کسب شده در مسابقه فعلی
+        let currentRaceBotCoins = [0, 0, 0]; // سکه‌های کسب شده ربات‌ها در مسابقه فعلی
+
+        // Physics
+        const MAX_SPEED = 5.2;
+        const BASE_ACC = 0.42;
+        const FRICTION = 0.048;
+        const TURN_SPEED = 0.16;
+        const COLLISION_DAMP = 0.55;
+
+        const NITRO_MULTIPLIER = 2.0; // ضریب شتاب نیترو
+        const NITRO_SPEED_MULTIPLIER = 1.5; // ضریب حداکثر سرعت نیترو
+
+        // Keyboard controls
+        const keys = {
+          ArrowUp: false,
+          ArrowDown: false,
+          ArrowLeft: false,
+          ArrowRight: false,
+          Space: false,
+        };
+
+        // Upgrade system
+        let playerUpgradeLevel = 1;
+        const MAX_UPGRADE_LEVEL = 10;
+        const UPGRADE_COSTS = {
+          1: 100,
+          2: 200,
+          3: 350,
+          4: 550,
+          5: 800,
+          6: 1100,
+          7: 1500,
+          8: 2000,
+          9: 2600,
+          10: 3500,
+        };
+
+        // Bot upgrade levels (تصادفی برای هر ربات)
+        let botUpgradeLevels = [1, 1, 1];
+
+        // Upgrade effects
+        const BASE_MAX_SPEED = 5.2;
+        const BASE_NITRO_MAX = 120;
+        const SPEED_PER_LEVEL = 0.25;
+        const NITRO_PER_LEVEL = 12;
+
+        // Nitro system
+        let playerNitroRemaining = getCurrentNitroMax();
+        let isNitroButtonPressed = false;
+
+        // Mouse control
+        let mouseControl = false;
+        let mouseX = 0,
+          mouseY = 0;
+
+        // Joystick
+        let joystick = {
+          center: { x: 0, y: 0 },
+          radius: 45,
+          handleRadius: 16,
+          active: false,
+          x: 0,
+          y: 0,
+          vector: { x: 0, y: 0 },
+          strength: 0,
+          enabled: true,
+        };
+
+        // Race state
+        let raceActive = false;
+        let raceFinished = false;
+        let timerRunning = false;
+        let globalStartTime = 0;
+        let finishedCount = 0;
+
+        let isPaused = false; // متغیر جدید برای وضعیت pause
+        let pauseStartTime = 0; // زمان شروع pause
+        let totalPausedTime = 0; // مجموع زمان paused شده
+
+        // Menu state
+        let isMainMenu = true; // نمایش صفحه اصلی
+        let mainMenuCarAngle = 0; // زاویه چرخش ماشین در صفحه اصلی
+
+        // Gate state
+        let gateState = {};
+        let lastSide = {};
+
+        // Fullscreen
+        function toggleFullscreen() {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => {
+              console.log(`Error: ${err.message}`);
+            });
+          } else {
+            document.exitFullscreen();
+          }
+        }
+
+        // ==================== MAIN MENU FUNCTIONS ====================
+        mainMenuCarAngle = 0;
+        let mainMenuFloatOffset = 0;
+        let mainMenuFloatDirection = 1;
+
+        function drawMainMenuCar() {
+          const carCanvas = document.getElementById("carPreviewCanvas");
+          if (!carCanvas) return;
+
+          const ctx = carCanvas.getContext("2d");
+          const w = carCanvas.width;
+          const h = carCanvas.height;
+
+          // پاک کردن canvas با شفافیت
+          ctx.clearRect(0, 0, w, h);
+
+          // ایجاد افکت نور پس‌زمینه ملایم
+          const gradient = ctx.createRadialGradient(
+            w / 2,
+            h / 2,
+            50,
+            w / 2,
+            h / 2,
+            150,
+          );
+          gradient.addColorStop(0, "rgba(255, 100, 50, 0.1)");
+          gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, w, h);
+
+          // چرخش 360 درجه بسیار آرام
+          mainMenuCarAngle += 0.005; // سرعت بسیار کم برای چرخش آرام
+          const rotation = mainMenuCarAngle;
+
+          // انیمیشن شناور بودن عمودی (اختیاری)
+          mainMenuFloatOffset += 0.02 * mainMenuFloatDirection;
+          if (Math.abs(mainMenuFloatOffset) > 8) {
+            mainMenuFloatDirection *= -1;
+          }
+
+          const carX = w / 2;
+          const carY = h / 2 + mainMenuFloatOffset;
+          const carSize = 4.2; // اندازه بزرگتر (2.2 برابر ماشین اصلی)
+
+          ctx.save();
+          ctx.translate(carX, carY);
+          ctx.rotate(rotation);
+          ctx.scale(carSize, carSize);
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+
+          // ========== رسم ماشین دقیقاً شبیه تابع drawCar اصلی ==========
+          // بدنه اصلی ماشین
+          ctx.fillStyle = "#ff5533"; // همان رنگ ماشین بازیکن
+          ctx.fillRect(-13, -8, 26, 16);
+
+          // چرخ‌ها (دقیقاً مانند تابع اصلی)
+          ctx.fillStyle = "#111";
+          // چرخ جلو راست
+          ctx.fillRect(8, -10, 4, 6);
+          ctx.fillRect(8, 5, 4, 6);
+          // چرخ عقب چپ
+          ctx.fillRect(-12, -10, 4, 6);
+          ctx.fillRect(-12, 5, 4, 6);
+
+          ctx.restore();
+
+          // ادامه انیمیشن
+          requestAnimationFrame(drawMainMenuCar);
+        }
+
+        function showMainMenu() {
+          isMainMenu = true;
+          raceActive = false;
+          raceFinished = false;
+          isPaused = false;
+
+          // بروزرسانی نمایش سکه در منو
+          updateMenuCoinDisplay();
+
+          // مخفی کردن UI بازی
+          document.getElementById("gameCanvas").style.display = "none";
+          document
+            .querySelector(".stats-panel")
+            .classList.add("game-ui-hidden");
+          document
+            .getElementById("nitroButton")
+            .classList.add("game-ui-hidden");
+          document.getElementById("pauseBtn").classList.add("game-ui-hidden");
+          document
+            .getElementById("fullscreenBtn")
+            .classList.add("game-ui-hidden");
+
+          // نمایش منوی اصلی
+          document.getElementById("mainMenu").style.display = "block";
+          document.getElementById("fullscreenMenuBtn").style.display = "flex";
+          document.querySelector(".menu-coins").style.display = "flex";
+
+          // راه‌اندازی مجدد انیمیشن ماشین
+          mainMenuCarAngle = 0;
+          mainMenuFloatOffset = 0;
+          drawMainMenuCar();
+        }
+
+        function updateMenuCoinDisplay() {
+          const menuCoinDisplay = document.getElementById("menuCoinDisplay");
+          if (menuCoinDisplay) {
+            menuCoinDisplay.textContent = playerCoins.toLocaleString();
+          }
+        }
+
+        function hideMainMenu() {
+          isMainMenu = false;
+
+          // مخفی کردن منوی اصلی
+          document.getElementById("mainMenu").style.display = "none";
+          document.getElementById("fullscreenMenuBtn").style.display = "none";
+          document.querySelector(".menu-coins").style.display = "none";
+
+          // نمایش UI بازی
+          document.getElementById("gameCanvas").style.display = "block";
+          document
+            .querySelector(".stats-panel")
+            .classList.remove("game-ui-hidden");
+          document
+            .getElementById("nitroButton")
+            .classList.remove("game-ui-hidden");
+          document
+            .getElementById("pauseBtn")
+            .classList.remove("game-ui-hidden");
+          document
+            .getElementById("fullscreenBtn")
+            .classList.remove("game-ui-hidden");
+
+          // ریست و شروع بازی
+          resetGame();
+        }
+
+        function returnToMainMenu() {
+          // Close any open overlays
+          const pauseOverlay = document.getElementById("pauseOverlay");
+          if (pauseOverlay) pauseOverlay.remove();
+
+          const messageOverlays = document.querySelectorAll(".message-overlay");
+          messageOverlays.forEach((overlay) => overlay.remove());
+
+          // Reset game state
+          raceActive = false;
+          raceFinished = false;
+          isPaused = false;
+
+          // Show main menu
+          showMainMenu();
+        }
+
+        // ==================== UPGRADE FUNCTIONS ====================
+        function getCurrentMaxSpeed() {
+          return BASE_MAX_SPEED + (playerUpgradeLevel - 1) * SPEED_PER_LEVEL;
+        }
+
+        function getCurrentNitroMax() {
+          return BASE_NITRO_MAX + (playerUpgradeLevel - 1) * NITRO_PER_LEVEL;
+        }
+
+        function getUpgradeCost() {
+          if (playerUpgradeLevel >= MAX_UPGRADE_LEVEL) return Infinity;
+          return UPGRADE_COSTS[playerUpgradeLevel];
+        }
+
+        function showUpgradeConfirm() {
+          if (playerUpgradeLevel >= MAX_UPGRADE_LEVEL) {
+            showTemporaryMessage("⚠️ MAX LEVEL REACHED! ⚠️", "#ff8888");
+            return;
+          }
+
+          const cost = getUpgradeCost();
+          if (playerCoins < cost) {
+            showTemporaryMessage(
+              `❌ NOT ENOUGH COINS! Need ${cost} 🪙 ❌`,
+              "#ff8888",
+            );
+            return;
+          }
+
+          // ایجاد پاپ آپ تایید
+          const overlay = document.createElement("div");
+          overlay.className = "confirm-overlay";
+          overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>⚡ UPGRADE CAR ⚡</h3>
+      <p style="margin: 15px 0;">Current Level: <strong style="color: #ffcc88;">${playerUpgradeLevel}</strong></p>
+      <p>Next Level: <strong style="color: #ffaa44;">${playerUpgradeLevel + 1}</strong></p>
+      <p>Cost: <strong style="color: #ffdd44;">${cost} 🪙</strong></p>
+      <div style="margin: 15px 0; font-size: 0.85rem;">
+        <div>📈 Speed: ${getCurrentMaxSpeed().toFixed(1)} → ${(getCurrentMaxSpeed() + SPEED_PER_LEVEL).toFixed(1)}</div>
+        <div>🔥 Nitro: ${getCurrentNitroMax()} → ${getCurrentNitroMax() + NITRO_PER_LEVEL}</div>
+      </div>
+      <div class="confirm-buttons">
+        <button class="confirm-yes" id="confirmYes">✓ UPGRADE</button>
+        <button class="confirm-no" id="confirmNo">✗ CANCEL</button>
+      </div>
+    </div>
+  `;
+          document.body.appendChild(overlay);
+
+          document
+            .getElementById("confirmYes")
+            .addEventListener("click", () => {
+              performUpgrade();
+              overlay.remove();
+            });
+
+          document.getElementById("confirmNo").addEventListener("click", () => {
+            overlay.remove();
+          });
+        }
+
+        // در تابع performUpgrade:
+        function performUpgrade() {
+          if (playerUpgradeLevel >= MAX_UPGRADE_LEVEL) return;
+
+          const cost = getUpgradeCost();
+          if (playerCoins < cost) {
+            showTemporaryMessage(
+              `❌ NOT ENOUGH COINS! Need ${cost} 🪙 ❌`,
+              "#ff8888",
+            );
+            return;
+          }
+
+          playerCoins -= cost;
+          playerUpgradeLevel++;
+
+          // مهم: وقتی ارتقا می‌دهیم، نیترو باقیمانده باید به حداکثر جدید برسد
+          playerNitroRemaining = getCurrentNitroMax();
+
+          updateCoinDisplay();
+          updateUpgradeButtonUI();
+          saveAllGameData();
+          showTemporaryMessage(
+            `✅ UPGRADED TO LEVEL ${playerUpgradeLevel}! ✅`,
+            "#88ff88",
+          );
+          playUpgradeAnimation();
+        }
+
+        function updateUpgradeButtonUI() {
+          const upgradeBtn = document.getElementById("upgradeBtn");
+          const upgradeLevelSpan = document.getElementById("upgradeLevel");
+
+          if (upgradeLevelSpan) {
+            upgradeLevelSpan.textContent = `LVL ${playerUpgradeLevel}`;
+          }
+
+          if (playerUpgradeLevel >= MAX_UPGRADE_LEVEL) {
+            if (upgradeBtn) {
+              upgradeBtn.classList.add("maxed");
+            }
+            if (upgradeLevelSpan) {
+              upgradeLevelSpan.textContent = `MAX`;
+            }
+          } else {
+            if (upgradeBtn) {
+              upgradeBtn.classList.remove("maxed");
+            }
+          }
+        }
+
+        function playUpgradeAnimation() {
+          const carCanvas = document.getElementById("carPreviewCanvas");
+          if (!carCanvas) return;
+
+          const originalFilter = carCanvas.style.filter;
+          carCanvas.style.filter =
+            "brightness(1.5) drop-shadow(0 0 20px #ffaa44)";
+          setTimeout(() => {
+            carCanvas.style.filter = originalFilter;
+          }, 300);
+        }
+
+        function showTemporaryMessage(message, color) {
+          const msgDiv = document.createElement("div");
+          msgDiv.textContent = message;
+          msgDiv.style.position = "fixed";
+          msgDiv.style.bottom = "100px";
+          msgDiv.style.left = "50%";
+          msgDiv.style.transform = "translateX(-50%)";
+          msgDiv.style.backgroundColor = "rgba(0,0,0,0.9)";
+          msgDiv.style.color = color;
+          msgDiv.style.padding = "12px 24px";
+          msgDiv.style.borderRadius = "40px";
+          msgDiv.style.fontSize = "1rem";
+          msgDiv.style.fontWeight = "bold";
+          msgDiv.style.zIndex = "2000";
+          msgDiv.style.border = `2px solid ${color}`;
+          msgDiv.style.backdropFilter = "blur(10px)";
+          msgDiv.style.fontFamily = "monospace";
+          document.body.appendChild(msgDiv);
+
+          setTimeout(() => {
+            msgDiv.remove();
+          }, 2000);
+        }
+
+        // ==================== SAVE & LOAD ALL DATA ====================
+        function saveAllGameData() {
+          // ذخیره اطلاعات بازیکن
+          localStorage.setItem("racingGameCoins", playerCoins.toString());
+          localStorage.setItem(
+            "racingUpgradeLevel",
+            playerUpgradeLevel.toString(),
+          );
+
+          // ذخیره اطلاعات ربات‌ها
+          localStorage.setItem("racingBotCoins", JSON.stringify(botCoins));
+          localStorage.setItem(
+            "racingBotUpgradeLevels",
+            JSON.stringify(botUpgradeLevels),
+          );
+
+          console.log("All game data saved!");
+        }
+
+        function loadAllGameData() {
+          // بارگذاری سکه بازیکن
+          const savedCoins = localStorage.getItem("racingGameCoins");
+          if (savedCoins && !isNaN(parseInt(savedCoins))) {
+            playerCoins = parseInt(savedCoins);
+          } else {
+            playerCoins = 0;
+          }
+
+          // بارگذاری سطح ارتقا بازیکن
+          const savedLevel = localStorage.getItem("racingUpgradeLevel");
+          if (savedLevel && !isNaN(parseInt(savedLevel))) {
+            playerUpgradeLevel = Math.min(
+              MAX_UPGRADE_LEVEL,
+              parseInt(savedLevel),
+            );
+          } else {
+            playerUpgradeLevel = 1;
+          }
+
+          // بارگذاری سکه ربات‌ها
+          const savedBotCoins = localStorage.getItem("racingBotCoins");
+          if (savedBotCoins) {
+            try {
+              const parsed = JSON.parse(savedBotCoins);
+              if (Array.isArray(parsed) && parsed.length === BOT_COUNT) {
+                botCoins = parsed;
+              } else {
+                botCoins = [0, 0, 0];
+              }
+            } catch (e) {
+              botCoins = [0, 0, 0];
+            }
+          } else {
+            botCoins = [0, 0, 0];
+          }
+
+          // بارگذاری سطح ارتقا ربات‌ها
+          const savedBotLevels = localStorage.getItem("racingBotUpgradeLevels");
+          if (savedBotLevels) {
+            try {
+              const parsed = JSON.parse(savedBotLevels);
+              if (Array.isArray(parsed) && parsed.length === BOT_COUNT) {
+                botUpgradeLevels = parsed;
+              } else {
+                botUpgradeLevels = [1, 1, 1];
+              }
+            } catch (e) {
+              botUpgradeLevels = [1, 1, 1];
+            }
+          } else {
+            botUpgradeLevels = [1, 1, 1];
+          }
+
+          // تنظیم نیترو بازیکن بر اساس سطح
+          playerNitroRemaining = getCurrentNitroMax();
+
+          // بروزرسانی استات ربات‌ها
+          for (let i = 0; i < BOT_COUNT; i++) {
+            updateBotStats(i);
+          }
+
+          // بروزرسانی UI
+          updateCoinDisplay();
+          updateUpgradeButtonUI();
+
+          console.log(
+            "All game data loaded! Player level:",
+            playerUpgradeLevel,
+            "Bot levels:",
+            botUpgradeLevels,
+          );
+        }
+
+        // ریست کامل تمام اطلاعات
+        function resetAllGameData() {
+          // ریست اطلاعات بازیکن
+          playerCoins = 0;
+          playerUpgradeLevel = 1;
+          playerNitroRemaining = getCurrentNitroMax();
+
+          // ریست اطلاعات ربات‌ها
+          botCoins = [0, 0, 0];
+          botUpgradeLevels = [1, 1, 1];
+
+          // بروزرسانی استات ربات‌ها
+          for (let i = 0; i < BOT_COUNT; i++) {
+            updateBotStats(i);
+          }
+
+          // ذخیره اطلاعات ریست شده
+          saveAllGameData();
+
+          // بروزرسانی UI
+          updateCoinDisplay();
+          updateUpgradeButtonUI();
+
+          // نمایش پیام تایید
+          showTemporaryMessage("🗑️ ALL DATA RESET! 🗑️", "#ff8888");
+        }
+
+        // پاپ آپ تایید ریست کامل
+        function showResetConfirm() {
+          const overlay = document.createElement("div");
+          overlay.className = "reset-confirm-overlay";
+          overlay.innerHTML = `
+    <div class="reset-confirm-box">
+      <h3>⚠️ RESET ALL GAME DATA ⚠️</h3>
+      <p>This will permanently delete:</p>
+      <p>• Your coins: <strong style="color: #ffdd44;">${playerCoins.toLocaleString()} 🪙</strong></p>
+      <p>• Your upgrade level: <strong style="color: #ffaa44;">Lv.${playerUpgradeLevel}</strong></p>
+      <p>• All bot progress and coins</p>
+      <p class="reset-warning">❗ THIS ACTION CANNOT BE UNDONE ❗</p>
+      <div class="reset-buttons">
+        <button class="reset-yes" id="resetYesBtn">✓ YES, RESET EVERYTHING</button>
+        <button class="reset-no" id="resetNoBtn">✗ CANCEL</button>
+      </div>
+    </div>
+  `;
+          document.body.appendChild(overlay);
+
+          document
+            .getElementById("resetYesBtn")
+            .addEventListener("click", () => {
+              resetAllGameData();
+              overlay.remove();
+            });
+
+          document
+            .getElementById("resetNoBtn")
+            .addEventListener("click", () => {
+              overlay.remove();
+            });
+        }
+
+        // ارتقای خودکار ربات‌ها - هر زمان سکه کافی داشت فوری ارتقا بده
+        function tryBotUpgrade(botIndex) {
+          const currentLevel = botUpgradeLevels[botIndex];
+
+          // اگر به حداکثر سطح رسیده، دیگر ارتقا نده
+          if (currentLevel >= MAX_UPGRADE_LEVEL) return false;
+
+          const cost = UPGRADE_COSTS[currentLevel];
+
+          // اگر سکه کافی داره، ارتقا بده
+          if (botCoins[botIndex] >= cost) {
+            botCoins[botIndex] -= cost;
+            botUpgradeLevels[botIndex]++;
+
+            // بروزرسانی استات ربات
+            updateBotStats(botIndex);
+
+            // نمایش پیام ارتقای ربات (اختیاری)
+            console.log(
+              `${BOT_NAMES[botIndex]} upgraded to level ${botUpgradeLevels[botIndex]}!`,
+            );
+
+            saveAllGameData();
+
+            return true;
+          }
+
+          return false;
+        }
+
+        // تابع بررسی دوره‌ای ارتقای ربات‌ها (در منوی اصلی)
+        let lastBotUpgradeCheck = performance.now();
+        function autoUpgradeBotsInMenu(nowMs) {
+          // هر 5 ثانیه یک بار بررسی کن
+          if (nowMs - lastBotUpgradeCheck > 5000) {
+            lastBotUpgradeCheck = nowMs;
+            upgradeAllBotsIfPossible();
+          }
+        }
+
+        // ارتقای تمام ربات‌ها تا جایی که سکه دارند
+        function upgradeAllBotsIfPossible() {
+          let anyUpgraded = true;
+          let maxIterations = 50; // جلوگیری از حلقه بی‌نهایت
+
+          while (anyUpgraded && maxIterations > 0) {
+            anyUpgraded = false;
+            maxIterations--;
+
+            for (let i = 0; i < bots.length; i++) {
+              if (tryBotUpgrade(i)) {
+                anyUpgraded = true;
+              }
+            }
+          }
+        }
+
+        function updateBotStats(botIndex) {
+          const level = botUpgradeLevels[botIndex];
+          // حداکثر سرعت ربات بر اساس سطح ارتقا (کمی کمتر از بازیکن برای چالش)
+          const botMaxSpeed =
+            BASE_MAX_SPEED + (level - 1) * SPEED_PER_LEVEL * 0.85;
+          // ظرفیت نیترو ربات
+          const botNitroMax =
+            BASE_NITRO_MAX + (level - 1) * NITRO_PER_LEVEL * 0.8;
+
+          if (bots[botIndex]) {
+            bots[botIndex].upgradeLevel = level;
+            bots[botIndex].customMaxSpeed = botMaxSpeed;
+            bots[botIndex].customNitroMax = botNitroMax;
+
+            // اگر نیترو فعلی ربات کمتر از حداکثر جدید است، افزایش بده
+            if (bots[botIndex].totalNitroRemaining < botNitroMax) {
+              bots[botIndex].totalNitroRemaining = botNitroMax;
+            }
+          }
+        }
+
+        // دریافت حداکثر سرعت ربات
+        function getBotMaxSpeed(bot) {
+          // حداکثر سرعت پایه ربات = 85% سرعت پایه بازیکن
+          let baseSpeed = BASE_MAX_SPEED * 0.85;
+
+          // پاداش سطح ارتقا (مشابه بازیکن اما 85% تاثیر)
+          const upgradeBonus = (bot.upgradeLevel - 1) * SPEED_PER_LEVEL * 0.85;
+
+          // سطح بازیکن را هم در نظر بگیرید تا رقابت جذاب بماند
+          const playerUpgradeBonus = (playerUpgradeLevel - 1) * SPEED_PER_LEVEL;
+
+          // اگر بازیکن خیلی قوی شد، ربات‌ها کمی قوی‌تر می‌شوند (حداکثر 95%)
+          let difficultyMultiplier = 0.85;
+          if (playerUpgradeLevel > 5) {
+            difficultyMultiplier = 0.9; // افزایش سختی برای بازیکن‌های حرفه‌ای
+          }
+          if (playerUpgradeLevel > 8) {
+            difficultyMultiplier = 0.95; // حداکثر سختی
+          }
+
+          return (baseSpeed + upgradeBonus) * difficultyMultiplier;
+        }
+
+        // Generate track
+        function generateTrack() {
+          const centerX = W / 2;
+          const centerY = H / 2;
+          const radiusX = Math.min(W, H) * 0.6; // تغییر از 0.9 به 0.35
+          const radiusY = Math.min(W, H) * 0.4; // تغییر از 0.3 به 0.25
+          const maxAllowedX = Math.min(W, H); // تغییر از 0.6 به 0.4
+          const finalRadiusX = Math.min(radiusX, maxAllowedX);
+
+          const rawPoints = [];
+          const segments = 64;
+
+          for (let i = 0; i <= segments; i++) {
+            const angle = (i / segments) * Math.PI * 2;
+            let rFactor = 1.0;
+            rFactor += Math.sin(angle * 6.0) * 0.12; // کاهش از 0.22 به 0.12
+            rFactor += Math.sin(angle * 6.0 + 1.8) * 0.08; // کاهش از 0.11 به 0.08
+            rFactor += Math.abs(Math.sin(angle * 2.0)) * 0.05; // کاهش از 0.08 به 0.05
+            const stretchX = 1 + Math.abs(Math.sin(angle * 1.0)) * 0.08; // کاهش از 0.15 به 0.08
+            rFactor = Math.max(0.85, Math.min(1.15, rFactor)); // محدوده tighter
+            let rX = finalRadiusX * rFactor * stretchX;
+            let rY = radiusY * rFactor * (1 - stretchX * 0.1); // کاهش اثر stretch
+            const shiftX = Math.sin(angle * 1.7) * (Math.min(W, H) * 0.02); // استفاده از min(W,H)
+            const shiftY = Math.cos(angle * 2.2) * (Math.min(W, H) * 0.015);
+            rawPoints.push({
+              x: centerX + Math.cos(angle) * rX + shiftX,
+              y: centerY + Math.sin(angle) * rY + shiftY,
+            });
+          }
+
+          rawPoints.pop();
+
+          function smoothPoints(points, steps = 5) {
+            const smoothed = [];
+            const n = points.length;
+            for (let i = 0; i < n; i++) {
+              const p0 = points[(i - 1 + n) % n];
+              const p1 = points[i];
+              const p2 = points[(i + 1) % n];
+              const p3 = points[(i + 2) % n];
+              for (let s = 0; s <= steps; s++) {
+                const t = s / steps;
+                const t2 = t * t;
+                const t3 = t2 * t;
+                const x =
+                  0.5 *
+                  (2 * p1.x +
+                    (-p0.x + p2.x) * t +
+                    (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+                    (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+                const y =
+                  0.5 *
+                  (2 * p1.y +
+                    (-p0.y + p2.y) * t +
+                    (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+                    (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
+                smoothed.push({ x, y });
+              }
+            }
+            return smoothed;
+          }
+
+          const smooth = smoothPoints(rawPoints, 5);
+          trackPoints = [];
+          trackLeftBound = [];
+          trackRightBound = [];
+
+          for (let i = 0; i < smooth.length; i++) {
+            const p = smooth[i];
+            const next = smooth[(i + 1) % smooth.length];
+            const prev = smooth[(i - 1 + smooth.length) % smooth.length];
+            let dx = next.x - prev.x;
+            let dy = next.y - prev.y;
+            let len = Math.hypot(dx, dy);
+            if (len < 0.001) len = 1;
+            dx /= len;
+            dy /= len;
+            let nx = -dy;
+            let ny = dx;
+            trackPoints.push(p);
+            const trackWidth = TRACK_WIDTH + Math.sin(i * 0.15) * 3;
+            trackLeftBound.push({
+              x: p.x + nx * (trackWidth / 2),
+              y: p.y + ny * (trackWidth / 2),
+            });
+            trackRightBound.push({
+              x: p.x - nx * (trackWidth / 2),
+              y: p.y - ny * (trackWidth / 2),
+            });
+          }
+
+          if (trackPoints.length > 0) {
+            trackPoints.push(trackPoints[0]);
+            trackLeftBound.push(trackLeftBound[0]);
+            trackRightBound.push(trackRightBound[0]);
+          }
+
+          if (trackPoints.length > 10) {
+            const idx = Math.floor(trackPoints.length * 0.28);
+            finishLineStart = trackLeftBound[idx];
+            finishLineEnd = trackRightBound[idx];
+          }
+        }
+
+        function isInsideTrack(x, y) {
+          let minDist = Infinity;
+          for (let i = 0; i < trackPoints.length - 1; i++) {
+            const p1 = trackPoints[i];
+            const p2 = trackPoints[i + 1];
+            const ax = x - p1.x,
+              ay = y - p1.y;
+            const bx = p2.x - p1.x,
+              by = p2.y - p1.y;
+            const len2 = bx * bx + by * by;
+            if (len2 === 0) continue;
+            let t = (ax * bx + ay * by) / len2;
+            t = Math.max(0, Math.min(1, t));
+            const projX = p1.x + t * bx;
+            const projY = p1.y + t * by;
+            const dist = Math.hypot(x - projX, y - projY);
+            if (dist < minDist) minDist = dist;
+          }
+          return minDist <= TRACK_WIDTH / 2;
+        }
+
+        function handleCollisionWithWall(obj, newX, newY) {
+          if (obj.finished) {
+            return { x: obj.x, y: obj.y, vx: 0, vy: 0 };
+          }
+          if (isInsideTrack(newX, newY)) {
+            return { x: newX, y: newY, vx: obj.velX, vy: obj.velY };
+          }
+          let closestNormal = { x: 0, y: 0 };
+          let minDist = Infinity;
+          for (let i = 0; i < trackPoints.length - 1; i++) {
+            const p1 = trackPoints[i];
+            const p2 = trackPoints[i + 1];
+            const ax = newX - p1.x,
+              ay = newY - p1.y;
+            const bx = p2.x - p1.x,
+              by = p2.y - p1.y;
+            const len2 = bx * bx + by * by;
+            if (len2 === 0) continue;
+            let t = (ax * bx + ay * by) / len2;
+            t = Math.max(0, Math.min(1, t));
+            const projX = p1.x + t * bx;
+            const projY = p1.y + t * by;
+            const dist = Math.hypot(newX - projX, newY - projY);
+            if (dist < minDist) {
+              minDist = dist;
+              let nx = newX - projX,
+                ny = newY - projY;
+              const nlen = Math.hypot(nx, ny);
+              if (nlen > 0.001) {
+                nx /= nlen;
+                ny /= nlen;
+              }
+              closestNormal = { x: nx, y: ny };
+            }
+          }
+          let correctedX = newX,
+            correctedY = newY;
+          for (let iter = 0; iter < 12; iter++) {
+            if (isInsideTrack(correctedX, correctedY)) break;
+            correctedX -= closestNormal.x * 3.5;
+            correctedY -= closestNormal.y * 3.5;
+          }
+          const dot = obj.velX * closestNormal.x + obj.velY * closestNormal.y;
+          const newVX = obj.velX - dot * closestNormal.x * 0.55;
+          const newVY = obj.velY - dot * closestNormal.y * 0.55;
+          return {
+            x: correctedX,
+            y: correctedY,
+            vx: newVX * 0.94,
+            vy: newVY * 0.94,
+          };
+        }
+
+        function handleCarCollision(carA, carB) {
+          if (carA.finished || carB.finished) return false;
+          const dx = carA.x - carB.x;
+          const dy = carA.y - carB.y;
+          const dist = Math.hypot(dx, dy);
+          const minDist = carA.radius + carB.radius;
+          if (dist < minDist) {
+            const angle = Math.atan2(dy, dx);
+            const overlap = minDist - dist;
+            const correctionX = Math.cos(angle) * overlap * 0.6;
+            const correctionY = Math.sin(angle) * overlap * 0.6;
+            if (!carA.finished) {
+              carA.x += correctionX;
+              carA.y += correctionY;
+            }
+            if (!carB.finished) {
+              carB.x -= correctionX;
+              carB.y -= correctionY;
+            }
+            const relVelX = carA.velX - carB.velX;
+            const relVelY = carA.velY - carB.velY;
+            const dot = relVelX * Math.cos(angle) + relVelY * Math.sin(angle);
+            if (dot < 0) {
+              const impulse = ((1 + COLLISION_DAMP) * dot) / 2;
+              if (!carA.finished) {
+                carA.velX -= impulse * Math.cos(angle);
+                carA.velY -= impulse * Math.sin(angle);
+              }
+              if (!carB.finished) {
+                carB.velX += impulse * Math.cos(angle);
+                carB.velY += impulse * Math.sin(angle);
+              }
+            }
+            return true;
+          }
+          return false;
+        }
+
+        function isOnFinishLine(x, y) {
+          if (!finishLineStart || !finishLineEnd) return false;
+          const dx = finishLineEnd.x - finishLineStart.x;
+          const dy = finishLineEnd.y - finishLineStart.y;
+          const len = Math.hypot(dx, dy);
+          if (len === 0) return false;
+          const t =
+            ((x - finishLineStart.x) * dx + (y - finishLineStart.y) * dy) /
+            (len * len);
+          if (t < 0 || t > 1) return false;
+          const projX = finishLineStart.x + t * dx;
+          const projY = finishLineStart.y + t * dy;
+          const dist = Math.hypot(x - projX, y - projY);
+          return dist < 14;
+        }
+
+        function getGateSide(x, y) {
+          if (!finishLineStart || !finishLineEnd) return 0;
+          const lineVec = {
+            x: finishLineEnd.x - finishLineStart.x,
+            y: finishLineEnd.y - finishLineStart.y,
+          };
+          const toPoint = {
+            x: x - finishLineStart.x,
+            y: y - finishLineStart.y,
+          };
+          return Math.sign(lineVec.x * toPoint.y - lineVec.y * toPoint.x);
+        }
+
+        function updateLapForEntity(entity, entityKey, nowMs, isPlayer) {
+          if (!raceActive) return;
+          if (entity.finished) return;
+          const onGate = isOnFinishLine(entity.x, entity.y);
+          const currentSide = getGateSide(entity.x, entity.y);
+          if (isPlayer && !timerRunning && onGate && raceActive) {
+            timerRunning = true;
+            globalStartTime = nowMs;
+            entity.currentLapStart = nowMs;
+            return;
+          }
+          if (timerRunning && !entity.finished) {
+            if (
+              onGate &&
+              !gateState[entityKey] &&
+              lastSide[entityKey] !== 0 &&
+              currentSide !== 0 &&
+              currentSide !== lastSide[entityKey]
+            ) {
+              const lapTime =
+                (nowMs - (entity.currentLapStart || globalStartTime)) / 1000;
+              if (lapTime > 0.3) {
+                entity.lap++;
+                if (isPlayer) {
+                  entity.currentLapTime = lapTime;
+                  if (lapTime < entity.bestLap) entity.bestLap = lapTime;
+                  entity.totalTime = (nowMs - globalStartTime) / 1000;
+                  updateUI();
+                } else {
+                  if (lapTime < entity.bestLap) entity.bestLap = lapTime;
+                  entity.totalTime = (nowMs - globalStartTime) / 1000;
+                }
+                entity.currentLapStart = nowMs;
+                if (entity.lap >= 3 && !entity.finished) {
+                  entity.finished = true;
+                  finishedCount++;
+                  document.getElementById("finishedCountDisplay").innerHTML =
+                    `${finishedCount}/${TOTAL_RACERS}`;
+                  const stopPos = getStopPositionAfterFinish();
+                  if (stopPos) {
+                    entity.stopPosition = stopPos;
+                    entity.x = stopPos.x;
+                    entity.y = stopPos.y;
+                  }
+                  entity.velX = 0;
+                  entity.velY = 0;
+                  if (isPlayer) {
+                    joystick.enabled = false;
+                    player.nitroEffect = false;
+
+                    joystick.active = false;
+                    joystick.x = joystick.center.x;
+                    joystick.y = joystick.center.y;
+                    joystick.vector = { x: 0, y: 0 };
+                    joystick.strength = 0;
+                    mouseControl = false;
+                    // همچنین کیبورد را هم ریست کنید
+                    keys.ArrowUp = false;
+                    keys.ArrowDown = false;
+                    keys.ArrowLeft = false;
+                    keys.ArrowRight = false;
+                  }
+                  if (finishedCount >= TOTAL_RACERS) {
+                    raceActive = false;
+                    raceFinished = true;
+                    showLeaderboard();
+                  }
+                }
+              }
+            }
+          }
+          gateState[entityKey] = onGate;
+          if (onGate) {
+            lastSide[entityKey] = currentSide;
+          } else if (lastSide[entityKey] === 0 && currentSide !== 0) {
+            lastSide[entityKey] = currentSide;
+          }
+        }
+
+        function updateUI() {
+          document.getElementById("lapCounter").innerHTML = `${player.lap}/3`;
+          document.getElementById("lapTimeDisplay").innerHTML =
+            player.currentLapTime.toFixed(2);
+          document.getElementById("bestTimeDisplay").innerHTML =
+            player.bestLap === Infinity ? "0.00" : player.bestLap.toFixed(2);
+        }
+
+        function getStopPositionAfterFinish() {
+          if (!finishLineStart || !finishLineEnd || trackPoints.length === 0)
+            return null;
+          const midX = (finishLineStart.x + finishLineEnd.x) / 2;
+          const midY = (finishLineStart.y + finishLineEnd.y) / 2;
+          let closestIdx = 0,
+            minD = Infinity;
+          for (let i = 0; i < trackPoints.length; i++) {
+            const d = Math.hypot(
+              trackPoints[i].x - midX,
+              trackPoints[i].y - midY,
+            );
+            if (d < minD) {
+              minD = d;
+              closestIdx = i;
+            }
+          }
+          const stopIdx = (closestIdx + 6) % trackPoints.length;
+          return { x: trackPoints[stopIdx].x, y: trackPoints[stopIdx].y };
+        }
+
+        function updateBotNitro(bot) {
+          if (bot.finished) return false;
+
+          // اگر نیترو فعال است و زمان آن تمام نشده
+          if (bot.nitroActive && bot.currentNitroDuration > 0) {
+            bot.currentNitroDuration--;
+            bot.totalNitroRemaining--;
+
+            if (bot.currentNitroDuration <= 0 || bot.totalNitroRemaining <= 0) {
+              bot.nitroActive = false;
+              bot.nitroEffect = false;
+              bot.currentNitroDuration = 0;
+            }
+            return bot.nitroActive;
+          }
+
+          // خنک‌کاری نیترو
+          if (bot.nitroCooldown > 0) {
+            bot.nitroCooldown--;
+            return false;
+          }
+
+          // شانس فعال کردن نیترو (اگر نیترو باقی مانده باشد)
+          if (
+            !bot.nitroActive &&
+            !bot.finished &&
+            bot.lap < 3 &&
+            bot.totalNitroRemaining > 0
+          ) {
+            // 15% شانس فعال شدن نیترو در هر فریم
+            if (Math.random() < 0.015) {
+              const duration = Math.min(30, bot.totalNitroRemaining); // مدت زمان نیترو
+              bot.currentNitroDuration = duration;
+              bot.nitroActive = true;
+              bot.nitroEffect = true;
+              bot.nitroCooldown = 40; // فاصله بین دو نیترو
+              return true;
+            }
+          }
+
+          return false;
+        }
+
+        function updateBot(bot, botKey, nowMs) {
+          if (!raceActive || bot.finished) return;
+
+          // آپدیت وضعیت نیترو ربات
+          const botNitroActive = updateBotNitro(bot);
+
+          // پیدا کردن هدف (نقطه بعدی مسیر)
+          let targetAngle = bot.angle;
+          let minDist = Infinity;
+          for (let i = 0; i < trackPoints.length; i++) {
+            const dist = Math.hypot(
+              bot.x - trackPoints[i].x,
+              bot.y - trackPoints[i].y,
+            );
+            if (dist < minDist) {
+              minDist = dist;
+              const next = trackPoints[(i + 5) % trackPoints.length];
+              targetAngle =
+                (Math.atan2(next.y - bot.y, next.x - bot.x) * 180) / Math.PI;
+            }
+          }
+
+          // چرخش به سمت هدف
+          let angleDiff = targetAngle - bot.angle;
+          if (angleDiff > 180) angleDiff -= 360;
+          if (angleDiff < -180) angleDiff += 360;
+          bot.angle += angleDiff * 0.1;
+
+          // محاسبه شتاب (مشابه بازیکن)
+          let currentAcc = BASE_ACC * 0.85; // ربات‌ها کمی کندتر از بازیکن
+
+          // اعمال ضریب نیترو روی شتاب
+          if (botNitroActive) {
+            currentAcc *= NITRO_MULTIPLIER; // 2.0 برابر شتاب
+          }
+
+          // اعمال شتاب به سرعت
+          bot.velX += Math.cos((bot.angle * Math.PI) / 180) * currentAcc;
+          bot.velY += Math.sin((bot.angle * Math.PI) / 180) * currentAcc;
+
+          // محدودیت حداکثر سرعت (مشابه بازیکن)
+          let spd = Math.hypot(bot.velX, bot.velY);
+          let currentMaxSpeed = getBotMaxSpeed(bot); // حداکثر سرعت پایه ربات
+
+          // اعمال ضریب نیترو روی حداکثر سرعت
+          if (botNitroActive) {
+            currentMaxSpeed *= NITRO_SPEED_MULTIPLIER; // 1.5 برابر حداکثر سرعت
+          }
+
+          // اعمال محدودیت سرعت
+          if (spd > currentMaxSpeed) {
+            bot.velX = (bot.velX * currentMaxSpeed) / spd;
+            bot.velY = (bot.velY * currentMaxSpeed) / spd;
+          }
+
+          // اعمال اصطکاک (مشابه بازیکن)
+          if (!botNitroActive) {
+            bot.velX *= 1 - FRICTION * 0.5;
+            bot.velY *= 1 - FRICTION * 0.5;
+          }
+
+          // به‌روزرسانی موقعیت با برخورد به دیوار
+          const newX = bot.x + bot.velX;
+          const newY = bot.y + bot.velY;
+          const col = handleCollisionWithWall(bot, newX, newY);
+          bot.x = col.x;
+          bot.y = col.y;
+          bot.velX = col.vx;
+          bot.velY = col.vy;
+
+          // به‌روزرسانی دور مسابقه
+          updateLapForEntity(bot, botKey, nowMs, false);
+        }
+
+        function showPauseMenu() {
+          if (raceFinished) return;
+
+          isPaused = true;
+          pauseStartTime = performance.now();
+
+          const overlay = document.createElement("div");
+          overlay.className = "message-overlay";
+          overlay.id = "pauseOverlay";
+          overlay.innerHTML = `<div class="message-box"><h1>⏸ GAME PAUSED</h1><div style="margin: 20px 0; font-size: 1.1rem; color: #ffcc88;">Race is temporarily stopped</div><div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;"><button class="restart-btn" id="resumeButton">▶ RESUME</button><button class="restart-btn" id="restartFromPauseButton">🏁 RESTART</button><button class="restart-btn back-to-menu-btn" id="backToMenuButton">🏠 MAIN MENU</button></div></div>`;
+          document.body.appendChild(overlay);
+
+          document
+            .getElementById("resumeButton")
+            .addEventListener("click", () => {
+              resumeGame();
+            });
+
+          document
+            .getElementById("restartFromPauseButton")
+            .addEventListener("click", () => {
+              const pauseOverlay = document.getElementById("pauseOverlay");
+              if (pauseOverlay) pauseOverlay.remove();
+              isPaused = false;
+              totalPausedTime = 0;
+              resetGame();
+            });
+
+          // دکمه جدید برای بازگشت به صفحه اصلی
+          document
+            .getElementById("backToMenuButton")
+            .addEventListener("click", () => {
+              const pauseOverlay = document.getElementById("pauseOverlay");
+              if (pauseOverlay) pauseOverlay.remove();
+              isPaused = false;
+              totalPausedTime = 0;
+              returnToMainMenu();
+            });
+        }
+
+        function resumeGame() {
+          const pauseOverlay = document.getElementById("pauseOverlay");
+          if (pauseOverlay) pauseOverlay.remove();
+
+          // محاسبه زمان سپری شده در حالت pause
+          const pausedDuration = performance.now() - pauseStartTime;
+          totalPausedTime += pausedDuration;
+
+          // تنظیم مجدد زمان‌ها با در نظر گرفتن زمان pause
+          if (globalStartTime > 0) {
+            globalStartTime += pausedDuration;
+          }
+          if (player.currentLapStart > 0) {
+            player.currentLapStart += pausedDuration;
+          }
+          for (let i = 0; i < bots.length; i++) {
+            if (bots[i].currentLapStart > 0) {
+              bots[i].currentLapStart += pausedDuration;
+            }
+          }
+
+          isPaused = false;
+        }
+
+        function showLeaderboard() {
+          // اول سکه‌ها را محاسبه و اعطا کن
+          const rankedRacers = calculateAndAwardCoins();
+
+          const participants = [];
+          participants.push({
+            name: "YOU",
+            totalTime: player.totalTime,
+            bestLap: player.bestLap,
+            laps: player.lap,
+            finished: player.finished,
+            isPlayer: true,
+            raceCoins: currentRaceCoins, // سکه‌های کسب شده در این مسابقه
+          });
+
+          for (let i = 0; i < bots.length; i++) {
+            participants.push({
+              name: BOT_NAMES[i],
+              totalTime: bots[i].totalTime || 0,
+              bestLap: bots[i].bestLap !== Infinity ? bots[i].bestLap : 0,
+              laps: bots[i].lap,
+              finished: bots[i].finished,
+              isPlayer: false,
+              color: BOT_COLORS[i],
+              raceCoins: currentRaceBotCoins[i], // سکه ربات در این مسابقه
+            });
+          }
+
+          participants.sort((a, b) => {
+            if (a.finished && !b.finished) return -1;
+            if (!a.finished && b.finished) return 1;
+            return a.totalTime - b.totalTime;
+          });
+
+          const winner = participants[0];
+
+          // ساخت لیدربورد با نمایش سکه‌های کسب شده در این مسابقه
+          let leaderboardHtml = `<div class="leaderboard" id="leaderboardForCapture"><div class="leaderboard-header"><span>#</span><span>PLAYER</span><span>TOTAL</span><span>BEST</span><span>EARNED</span></div>`;
+
+          for (let i = 0; i < participants.length; i++) {
+            const p = participants[i];
+            const rankClass =
+              i === 0 ? "rank-1" : i === 1 ? "rank-2" : i === 2 ? "rank-3" : "";
+            const totalTimeStr = p.finished
+              ? p.totalTime > 0
+                ? p.totalTime.toFixed(2) + "s"
+                : "0.00s"
+              : "DNF";
+            const bestStr =
+              p.bestLap > 0 && p.bestLap !== Infinity
+                ? p.bestLap.toFixed(2) + "s"
+                : "--";
+            const coinDisplayStr =
+              p.finished && p.raceCoins > 0
+                ? `+${p.raceCoins} 🪙`
+                : p.finished
+                  ? "0 🪙"
+                  : "-";
+
+            leaderboardHtml += `<div class="leaderboard-row ${i === 0 && p.finished ? "winner" : ""}">
+      <span class="rank-icon ${rankClass}">${i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}</span>
+      <span>${p.name}</span>
+      <span>${totalTimeStr}</span>
+      <span>${bestStr}</span>
+      <span style="color: #ffdd44; font-weight: bold;">${coinDisplayStr}</span>
+    </div>`;
+          }
+
+          leaderboardHtml += `</div>`;
+
+          const overlay = document.createElement("div");
+          overlay.className = "message-overlay";
+          overlay.innerHTML = `<div class="message-box" id="messageBox">
+    <h1>${winner.name === "YOU" ? "✨ YOU WIN! ✨" : winner.name + " WINS!"}</h1>
+    ${leaderboardHtml}
+    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+      <button class="restart-btn" id="restartButton">🏁 RESTART GAME</button>
+      <button class="restart-btn download-btn" id="downloadButton">📸 DOWNLOAD SCREENSHOT</button>
+      <button class="restart-btn back-to-menu-btn" id="backToMenuButton">🏠 MAIN MENU</button>
+    </div>
+  </div>`;
+          document.body.appendChild(overlay);
+
+          document
+            .getElementById("restartButton")
+            .addEventListener("click", () => resetGame());
+          document
+            .getElementById("downloadButton")
+            .addEventListener("click", () =>
+              downloadLeaderboardAsImage(participants, winner),
+            );
+          document
+            .getElementById("backToMenuButton")
+            .addEventListener("click", () => {
+              const pauseOverlay = document.getElementById("pauseOverlay");
+              if (pauseOverlay) pauseOverlay.remove();
+              isPaused = false;
+              totalPausedTime = 0;
+              returnToMainMenu();
+            });
+        }
+
+        // تابع جدید برای دانلود تصویر از لیدربورد (بدون کتابخانه)
+        function downloadLeaderboardAsImage(participants, winner) {
+          // ابعاد تصویر
+          const width = 500;
+          const height = 100 + participants.length * 50;
+
+          // ایجاد canvas
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+
+          // پس‌زمینه گرادینت
+          const gradient = ctx.createLinearGradient(0, 0, 0, height);
+          gradient.addColorStop(0, "#1a1a2e");
+          gradient.addColorStop(1, "#0a0a18");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, width, height);
+
+          // حاشیه طلایی
+          ctx.strokeStyle = "#ffcc66";
+          ctx.lineWidth = 3;
+          ctx.strokeRect(5, 5, width - 10, height - 10);
+
+          // عنوان برنده
+          ctx.font = "bold 22px 'Segoe UI', 'Poppins', system-ui";
+          ctx.fillStyle = "#ffcc88";
+          ctx.textAlign = "center";
+          const winnerText =
+            winner.name === "YOU" ? "✨ YOU WIN! ✨" : winner.name + " WINS!";
+          ctx.fillText(winnerText, width / 2, 45);
+
+          // خط جداکننده
+          ctx.beginPath();
+          ctx.moveTo(30, 60);
+          ctx.lineTo(width - 30, 60);
+          ctx.strokeStyle = "#ffcc6633";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // تاریخ
+          const dateStr = new Date().toLocaleString("fa-IR");
+          ctx.font = "12px monospace";
+          ctx.fillStyle = "#ffcc88aa";
+          ctx.fillText(dateStr, width / 2, 80);
+
+          // سربرگ جدول
+          let yOffset = 105;
+          ctx.font = "bold 14px monospace";
+          ctx.fillStyle = "#ffcc88";
+          ctx.textAlign = "left";
+          ctx.fillText("#", 30, yOffset);
+          ctx.fillText("PLAYER", 70, yOffset);
+          ctx.fillText("TOTAL", 280, yOffset);
+          ctx.fillText("BEST", 400, yOffset);
+
+          yOffset += 5;
+          ctx.beginPath();
+          ctx.moveTo(20, yOffset);
+          ctx.lineTo(width - 20, yOffset);
+          ctx.strokeStyle = "#ffcc6633";
+          ctx.stroke();
+          yOffset += 15;
+
+          // ردیف‌های جدول
+          for (let i = 0; i < participants.length; i++) {
+            const p = participants[i];
+            const totalTimeStr = p.finished
+              ? p.totalTime > 0
+                ? p.totalTime.toFixed(2) + "s"
+                : "0.00s"
+              : "DNF";
+            const bestStr =
+              p.bestLap > 0 && p.bestLap !== Infinity
+                ? p.bestLap.toFixed(2) + "s"
+                : "--";
+
+            // رنگ ردیف برنده
+            if (i === 0 && p.finished) {
+              ctx.fillStyle = "#ffcc6633";
+              ctx.fillRect(15, yOffset - 12, width - 30, 30);
+            }
+
+            ctx.font = "14px monospace";
+            ctx.fillStyle =
+              i === 0
+                ? "#ffd700"
+                : i === 1
+                  ? "#c0c0c0"
+                  : i === 2
+                    ? "#cd7f32"
+                    : "#dddddd";
+
+            // رتبه
+            let rankText = "";
+            if (i === 0) rankText = "🥇";
+            else if (i === 1) rankText = "🥈";
+            else if (i === 2) rankText = "🥉";
+            else rankText = (i + 1).toString();
+            ctx.fillText(rankText, 30, yOffset);
+
+            // نام
+            ctx.fillStyle = p.name === "YOU" ? "#ffaa66" : "#dddddd";
+            ctx.fillText(p.name, 70, yOffset);
+
+            // زمان کل
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(totalTimeStr, 280, yOffset);
+
+            // بهترین دور
+            ctx.fillStyle =
+              p.name === "YOU" && p.bestLap !== Infinity
+                ? "#88ffaa"
+                : "#aaaaff";
+            ctx.fillText(bestStr, 400, yOffset);
+
+            yOffset += 35;
+          }
+
+          // پایین جدول - امضا
+          ctx.font = "10px monospace";
+          ctx.fillStyle = "#ffcc8844";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "🏁 Racing Game - Nitro Limited Edition 🏁",
+            width / 2,
+            height - 15,
+          );
+
+          // دانلود تصویر
+          const link = document.createElement("a");
+          const timestamp = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace(/:/g, "-");
+          link.download = `racing-leaderboard-${timestamp}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        }
+
+        // تابع محاسبه و اعطای سکه بر اساس رتبه
+        function calculateAndAwardCoins() {
+          // جمع‌آوری همه شرکت‌کنندگان
+          const allRacers = [];
+
+          allRacers.push({
+            name: "YOU",
+            isPlayer: true,
+            finished: player.finished,
+            totalTime: player.totalTime,
+            lap: player.lap,
+          });
+
+          for (let i = 0; i < bots.length; i++) {
+            allRacers.push({
+              name: BOT_NAMES[i],
+              isPlayer: false,
+              botIndex: i,
+              finished: bots[i].finished,
+              totalTime: bots[i].totalTime,
+              lap: bots[i].lap,
+            });
+          }
+
+          allRacers.sort((a, b) => {
+            if (a.finished && !b.finished) return -1;
+            if (!a.finished && b.finished) return 1;
+            return a.totalTime - b.totalTime;
+          });
+
+          currentRaceCoins = 0;
+          currentRaceBotCoins = [0, 0, 0];
+
+          for (let i = 0; i < allRacers.length; i++) {
+            const racer = allRacers[i];
+            const rank = i + 1;
+            let coinReward = 0;
+
+            if (racer.finished) {
+              if (rank === 1) coinReward = COIN_REWARDS[1];
+              else if (rank === 2) coinReward = COIN_REWARDS[2];
+              else if (rank === 3) coinReward = COIN_REWARDS[3];
+              else if (rank === 4) coinReward = COIN_REWARDS[4];
+
+              if (racer.isPlayer) {
+                playerCoins += coinReward;
+                currentRaceCoins = coinReward;
+                updateCoinDisplay();
+              } else {
+                botCoins[racer.botIndex] += coinReward;
+                currentRaceBotCoins[racer.botIndex] = coinReward;
+              }
+            }
+          }
+
+          // ارتقای خودکار ربات‌ها - هر زمان سکه کافی داشتند فوری ارتقا بده
+          upgradeAllBotsIfPossible();
+
+          saveAllGameData();
+
+          return allRacers;
+        }
+
+        // بروزرسانی نمایش سکه در پنل
+        function updateCoinDisplay() {
+          const coinDisplay = document.getElementById("coinDisplay");
+          if (coinDisplay) {
+            coinDisplay.innerHTML = playerCoins.toLocaleString();
+
+            // انیمیشن کوچک برای تغییر سکه
+            coinDisplay.style.transform = "scale(1.2)";
+            setTimeout(() => {
+              coinDisplay.style.transform = "scale(1)";
+            }, 200);
+          }
+
+          // بروزرسانی سکه در منوی اصلی اگر نمایش داده شده
+          const menuCoinDisplay = document.getElementById("menuCoinDisplay");
+          if (menuCoinDisplay && isMainMenu) {
+            menuCoinDisplay.textContent = playerCoins.toLocaleString();
+          }
+        }
+
+        // ریست سکه‌ها (در صورت نیاز)
+        function resetCoins() {
+          if (confirm("Are you sure you want to reset all your coins?")) {
+            playerCoins = 0;
+            botCoins = [0, 0, 0];
+            updateCoinDisplay();
+            saveAllGameData();
+            showTemporaryMessage("🪙 Coins reset to 0!", "#ffaa44");
+          }
+        }
+
+        function updateNitroButtonUI() {
+          const nitroBtn = document.getElementById("nitroButton");
+          if (!nitroBtn) return;
+          const currentMax = getCurrentNitroMax(); // استفاده از تابع برای گرفتن حداکثر فعلی
+          const percent = playerNitroRemaining / currentMax;
+          const progressDiv = nitroBtn.querySelector(".nitro-progress");
+          if (playerNitroRemaining <= 0 || player.finished) {
+            nitroBtn.classList.add("disabled");
+            if (progressDiv)
+              progressDiv.style.background = `conic-gradient(#aa2200 0deg, #aa2200 360deg, transparent 360deg, transparent 360deg)`;
+          } else {
+            nitroBtn.classList.remove("disabled");
+            if (progressDiv) {
+              const angle = percent * 360;
+              progressDiv.style.background = `conic-gradient(#aa2200 0deg, #aa2200 ${angle}deg, transparent ${angle}deg, transparent 360deg)`;
+            }
+          }
+        }
+
+        function resetPositions() {
+          if (trackPoints.length > 8 && finishLineStart && finishLineEnd) {
+            const midX = (finishLineStart.x + finishLineEnd.x) / 2;
+            const midY = (finishLineStart.y + finishLineEnd.y) / 2;
+            let closestIdx = 0,
+              minD = Infinity;
+            for (let i = 0; i < trackPoints.length; i++) {
+              const d = Math.hypot(
+                trackPoints[i].x - midX,
+                trackPoints[i].y - midY,
+              );
+              if (d < minD) {
+                minD = d;
+                closestIdx = i;
+              }
+            }
+            const startIdx = closestIdx;
+            player.x = trackPoints[startIdx].x;
+            player.y = trackPoints[startIdx].y;
+            const nextIdx = (startIdx + 1) % trackPoints.length;
+            player.angle =
+              (Math.atan2(
+                trackPoints[nextIdx].y - player.y,
+                trackPoints[nextIdx].x - player.x,
+              ) *
+                180) /
+              Math.PI;
+            for (let i = 0; i < BOT_COUNT; i++) {
+              const offset = (i + 1) * 4;
+              const botIdx =
+                (startIdx - offset + trackPoints.length) % trackPoints.length;
+              const ang =
+                (Math.atan2(
+                  trackPoints[(botIdx + 1) % trackPoints.length].y -
+                    trackPoints[botIdx].y,
+                  trackPoints[(botIdx + 1) % trackPoints.length].x -
+                    trackPoints[botIdx].x,
+                ) *
+                  180) /
+                Math.PI;
+              bots[i].x = trackPoints[botIdx].x;
+              bots[i].y = trackPoints[botIdx].y;
+              bots[i].angle = ang;
+            }
+          }
+        }
+
+        function initGame() {
+          W = window.innerWidth;
+          H = window.innerHeight;
+          canvas.width = W;
+          canvas.height = H;
+          joystick.center.x = 80;
+          joystick.center.y = H - 80;
+          joystick.radius = Math.min(40, W * 0.06, H * 0.08);
+          joystick.handleRadius = joystick.radius * 0.36;
+          joystick.x = joystick.center.x;
+          joystick.y = joystick.center.y;
+          joystick.enabled = true;
+
+          generateTrack();
+
+          bots = [];
+          for (let i = 0; i < BOT_COUNT; i++) {
+            bots.push({
+              id: i,
+              x: 0,
+              y: 0,
+              angle: 0,
+              velX: 0,
+              velY: 0,
+              radius: 12,
+              lap: 0,
+              finished: false,
+              bestLap: Infinity,
+              lastLapTime: 0,
+              totalTime: 0,
+              currentLapStart: 0,
+              lastGateSide: 0,
+              name: BOT_NAMES[i],
+              color: BOT_COLORS[i],
+              currentBoost: 1.0,
+              boostTimer: Math.floor(Math.random() * 30),
+              stopPosition: null,
+              nitroEffect: false,
+              totalNitroRemaining: getCurrentNitroMax(),
+              currentNitroDuration: 0,
+              nitroCooldown: 20 + Math.random() * 40,
+              nitroActive: false,
+              upgradeLevel: 1,
+              customMaxSpeed: BASE_MAX_SPEED * 0.85,
+              customNitroMax: BASE_NITRO_MAX,
+            });
+          }
+
+          // بارگذاری تمام اطلاعات ذخیره شده
+          loadAllGameData();
+
+          resetPositions();
+          raceActive = false;
+          raceFinished = false;
+          timerRunning = false;
+          finishedCount = 0;
+          player.finished = false;
+          player.nitroEffect = false;
+
+          gateState = { player: false };
+          lastSide = { player: 0 };
+          for (let i = 0; i < BOT_COUNT; i++) {
+            gateState[`bot${i}`] = false;
+            lastSide[`bot${i}`] = 0;
+          }
+
+          updateUI();
+          document.getElementById("finishedCountDisplay").innerHTML =
+            `0/${TOTAL_RACERS}`;
+          updateNitroButtonUI();
+          updateCoinDisplay();
+          updateUpgradeButtonUI();
+        }
+
+        // ========== کنترل ترکیبی (کیبورد + ماوس + جوی استیک) ==========
+        function getControlVector() {
+          let moveX = 0,
+            moveY = 0;
+          if (keys.ArrowUp) moveY = -1;
+          if (keys.ArrowDown) moveY = 1;
+          if (keys.ArrowLeft) moveX = -1;
+          if (keys.ArrowRight) moveX = 1;
+
+          if (moveX !== 0 || moveY !== 0) {
+            const len = Math.hypot(moveX, moveY);
+            moveX /= len;
+            moveY /= len;
+            mouseControl = false;
+
+            // هماهنگ‌سازی جوی‌استیک با کیبورد
+            if (joystick.enabled) {
+              joystick.active = true;
+              joystick.strength = 1;
+              joystick.vector = { x: moveX, y: moveY };
+              // محاسبه موقعیت هندل جوی‌استیک
+              const angle = Math.atan2(moveY, moveX);
+              joystick.x =
+                joystick.center.x + Math.cos(angle) * joystick.radius;
+              joystick.y =
+                joystick.center.y + Math.sin(angle) * joystick.radius;
+            }
+
+            return { x: moveX, y: moveY, strength: 1, active: true };
+          }
+
+          if (mouseControl) {
+            const dx = mouseX - joystick.center.x;
+            const dy = mouseY - joystick.center.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist > 5) {
+              let str = Math.min(1, dist / joystick.radius);
+              let angle = Math.atan2(dy, dx);
+              return {
+                x: Math.cos(angle),
+                y: Math.sin(angle),
+                strength: str,
+                active: true,
+              };
+            }
+          }
+
+          if (joystick.active && joystick.strength > 0) {
+            return {
+              x: joystick.vector.x,
+              y: joystick.vector.y,
+              strength: joystick.strength,
+              active: true,
+            };
+          }
+
+          return { x: 0, y: 0, strength: 0, active: false };
+        }
+
+        function getCanvasCoords(e) {
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          let cx, cy;
+          if (e.touches) {
+            if (e.touches.length === 0) return null;
+            cx = e.touches[0].clientX;
+            cy = e.touches[0].clientY;
+          } else {
+            cx = e.clientX;
+            cy = e.clientY;
+          }
+          return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
+        }
+
+        function updateJoystickFromTouch(pos) {
+          if (!joystick.enabled) return;
+          const dx = pos.x - joystick.center.x;
+          const dy = pos.y - joystick.center.y;
+          const dist = Math.hypot(dx, dy);
+          let str = Math.min(1, dist / joystick.radius);
+          let angle = Math.atan2(dy, dx);
+          let lx, ly;
+          if (dist > joystick.radius) {
+            lx = joystick.center.x + Math.cos(angle) * joystick.radius;
+            ly = joystick.center.y + Math.sin(angle) * joystick.radius;
+          } else {
+            lx = pos.x;
+            ly = pos.y;
+          }
+          joystick.x = lx;
+          joystick.y = ly;
+          joystick.strength = str;
+          joystick.vector = {
+            x: Math.cos(angle) * str,
+            y: Math.sin(angle) * str,
+          };
+        }
+
+        function onStart(e) {
+          e.preventDefault();
+          const p = getCanvasCoords(e);
+          if (p) {
+            if (
+              Math.hypot(p.x - joystick.center.x, p.y - joystick.center.y) <=
+              joystick.radius + 25
+            ) {
+              joystick.active = true;
+              updateJoystickFromTouch(p);
+              mouseControl = false;
+            } else {
+              mouseControl = true;
+              mouseX = p.x;
+              mouseY = p.y;
+            }
+          }
+        }
+
+        function onMove(e) {
+          if (!joystick.enabled) return;
+          const p = getCanvasCoords(e);
+          if (p) {
+            if (joystick.active) {
+              e.preventDefault();
+              updateJoystickFromTouch(p);
+              mouseControl = false;
+            } else if (mouseControl) {
+              mouseX = p.x;
+              mouseY = p.y;
+            }
+          }
+        }
+
+        function onEnd(e) {
+          joystick.active = false;
+          joystick.x = joystick.center.x;
+          joystick.y = joystick.center.y;
+          joystick.vector = { x: 0, y: 0 };
+          joystick.strength = 0;
+          mouseControl = false;
+        }
+
+        function drawTrack() {
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, "#0f172a");
+          grad.addColorStop(1, "#1e1b2e");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.beginPath();
+          for (let i = 0; i < trackLeftBound.length; i++) {
+            if (i === 0) ctx.moveTo(trackLeftBound[i].x, trackLeftBound[i].y);
+            else ctx.lineTo(trackLeftBound[i].x, trackLeftBound[i].y);
+          }
+          for (let i = trackRightBound.length - 1; i >= 0; i--) {
+            ctx.lineTo(trackRightBound[i].x, trackRightBound[i].y);
+          }
+          ctx.closePath();
+          ctx.fillStyle = "#2d2f36";
+          ctx.fill();
+          ctx.beginPath();
+          for (let i = 0; i < trackLeftBound.length; i++) {
+            if (i === 0) ctx.moveTo(trackLeftBound[i].x, trackLeftBound[i].y);
+            else ctx.lineTo(trackLeftBound[i].x, trackLeftBound[i].y);
+          }
+          ctx.strokeStyle = "#5a5e6e";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.beginPath();
+          for (let i = 0; i < trackRightBound.length; i++) {
+            if (i === 0) ctx.moveTo(trackRightBound[i].x, trackRightBound[i].y);
+            else ctx.lineTo(trackRightBound[i].x, trackRightBound[i].y);
+          }
+          ctx.stroke();
+          ctx.beginPath();
+          for (let i = 0; i < trackPoints.length; i++) {
+            if (i === 0) ctx.moveTo(trackPoints[i].x, trackPoints[i].y);
+            else ctx.lineTo(trackPoints[i].x, trackPoints[i].y);
+          }
+          ctx.strokeStyle = "#ffcc44";
+          ctx.setLineDash([14, 22]);
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.setLineDash([]);
+          if (finishLineStart && finishLineEnd) {
+            const steps = 20;
+            for (let i = 0; i < steps; i++) {
+              const t1 = i / steps;
+              const t2 = (i + 1) / steps;
+              const x1 = finishLineStart.x * (1 - t1) + finishLineEnd.x * t1;
+              const y1 = finishLineStart.y * (1 - t1) + finishLineEnd.y * t1;
+              const x2 = finishLineStart.x * (1 - t2) + finishLineEnd.x * t2;
+              const y2 = finishLineStart.y * (1 - t2) + finishLineEnd.y * t2;
+              ctx.beginPath();
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x2, y2);
+              ctx.lineWidth = 6;
+              ctx.strokeStyle = i % 2 === 0 ? "#fff" : "#222";
+              ctx.stroke();
+            }
+          }
+        }
+
+        function drawCar(
+          x,
+          y,
+          angle,
+          color,
+          isPlayer = false,
+          finished = false,
+        ) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate((angle * Math.PI) / 180);
+          ctx.shadowBlur = 3;
+          ctx.globalAlpha = finished ? 0.7 : 1;
+
+          // بدنه اصلی ماشین
+          ctx.fillStyle = color;
+          ctx.fillRect(-13, -8, 26, 16);
+
+          // چرخ‌ها
+          ctx.fillStyle = "#111";
+          // چرخ جلو (راست)
+          ctx.fillRect(8, -10, 4, 6);
+          ctx.fillRect(8, 5, 4, 6);
+          // چرخ عقب (چپ)
+          ctx.fillRect(-12, -10, 4, 6);
+          ctx.fillRect(-12, 5, 4, 6);
+
+          ctx.globalAlpha = 1;
+          ctx.restore();
+        }
+
+        function drawFlames(x, y, angle) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate((angle * Math.PI) / 180);
+          for (let i = 0; i < 5; i++) {
+            const offsetX = -16 - Math.random() * 8;
+            const offsetY = (Math.random() - 0.5) * 8;
+            const size = 4 + Math.random() * 6;
+            const alpha = 0.6 + Math.random() * 0.4;
+            ctx.beginPath();
+            ctx.moveTo(offsetX, -3);
+            ctx.lineTo(offsetX - size, 0);
+            ctx.lineTo(offsetX, 3);
+            ctx.fillStyle = `rgba(255, ${100 + Math.random() * 100}, 0, ${alpha})`;
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        function drawJoystickUI() {
+          ctx.shadowBlur = 0;
+          ctx.globalAlpha = joystick.enabled ? 1 : 0.4;
+          ctx.beginPath();
+          ctx.arc(
+            joystick.center.x,
+            joystick.center.y,
+            joystick.radius,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = "rgba(20,20,40,0.6)";
+          ctx.fill();
+          ctx.strokeStyle = "#ffaa55";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(
+            joystick.x,
+            joystick.y,
+            joystick.handleRadius,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle =
+            joystick.active || mouseControl ? "#ff8844" : "#aa7755";
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+
+        // اصلاح تابع startCountdown
+        function startCountdown(callback) {
+          let count = 3;
+          const overlay = document.createElement("div");
+          overlay.className = "countdown-overlay";
+          const numberDiv = document.createElement("div");
+          numberDiv.className = "countdown-number";
+          overlay.appendChild(numberDiv);
+          document.body.appendChild(overlay);
+
+          // غیرفعال کردن فیزیک در حین شمارش معکوس
+          raceActive = false;
+
+          // اطمینان از صفر بودن سرعت همه موجودیت‌ها
+          player.velX = 0;
+          player.velY = 0;
+          for (let i = 0; i < bots.length; i++) {
+            bots[i].velX = 0;
+            bots[i].velY = 0;
+            bots[i].currentBoost = 1.0;
+            bots[i].nitroActive = false;
+            bots[i].nitroEffect = false;
+          }
+
+          function updateCount() {
+            if (count > 0) {
+              numberDiv.textContent = count;
+              numberDiv.className = "countdown-number";
+              count--;
+              setTimeout(updateCount, 1000);
+            } else {
+              numberDiv.textContent = "GO!";
+              numberDiv.className = "countdown-go";
+              setTimeout(() => {
+                overlay.remove();
+                raceActive = true; // فقط بعد از "GO!" فعال شود
+                callback();
+              }, 500);
+            }
+          }
+          updateCount();
+        }
+
+        function checkOrientation() {
+          const warning = document.getElementById("orientationWarning");
+          if (warning) {
+            if (window.innerHeight > window.innerWidth) {
+              warning.style.display = "flex";
+              if (raceActive) raceActive = false;
+            } else {
+              warning.style.display = "none";
+              if (
+                !raceActive &&
+                !raceFinished &&
+                !document.querySelector(".countdown-overlay") &&
+                !document.querySelector(".message-overlay")
+              ) {
+                resetGame();
+              }
+            }
+          }
+        }
+
+        function handleKeyDown(e) {
+          if (
+            e.key === "ArrowUp" ||
+            e.key === "ArrowDown" ||
+            e.key === "ArrowLeft" ||
+            e.key === "ArrowRight"
+          ) {
+            e.preventDefault();
+            keys[e.key] = true;
+            mouseControl = false;
+            joystick.active = false;
+          }
+          if (e.key === " " || e.key === "Space") {
+            e.preventDefault();
+            if (
+              raceActive &&
+              !player.finished &&
+              joystick.enabled &&
+              playerNitroRemaining > 0 &&
+              !keys.Space
+            ) {
+              isNitroButtonPressed = true;
+              keys.Space = true;
+            }
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            if (raceActive && !raceFinished && !isPaused) {
+              showPauseMenu();
+            }
+          }
+        }
+
+        function handleKeyUp(e) {
+          if (
+            e.key === "ArrowUp" ||
+            e.key === "ArrowDown" ||
+            e.key === "ArrowLeft" ||
+            e.key === "ArrowRight"
+          ) {
+            e.preventDefault();
+            keys[e.key] = false;
+
+            // بازگشت جوی‌استیک به حالت مرکزی
+            if (
+              joystick.enabled &&
+              !keys.ArrowUp &&
+              !keys.ArrowDown &&
+              !keys.ArrowLeft &&
+              !keys.ArrowRight &&
+              !mouseControl
+            ) {
+              joystick.active = false;
+              joystick.x = joystick.center.x;
+              joystick.y = joystick.center.y;
+              joystick.vector = { x: 0, y: 0 };
+              joystick.strength = 0;
+            }
+          }
+          if (e.key === " " || e.key === "Space") {
+            e.preventDefault();
+            isNitroButtonPressed = false;
+            keys.Space = false;
+          }
+        }
+
+        // ==================== RESET GAME ====================
+        function resetGame() {
+          // پاک کردن منوی pause اگر باز است
+          const pauseOverlay = document.getElementById("pauseOverlay");
+          if (pauseOverlay) pauseOverlay.remove();
+
+          const overlays = document.querySelectorAll(".message-overlay");
+          overlays.forEach((overlay) => overlay.remove());
+
+          isPaused = false;
+          totalPausedTime = 0;
+          pauseStartTime = 0;
+
+          if (isMainMenu) return;
+
+          raceActive = false;
+          raceFinished = false;
+          timerRunning = false;
+          finishedCount = 0;
+
+          joystick.enabled = true;
+          isNitroButtonPressed = false;
+          mouseControl = false;
+
+          joystick.enabled = true;
+          joystick.active = false;
+          joystick.x = joystick.center.x;
+          joystick.y = joystick.center.y;
+          joystick.vector = { x: 0, y: 0 };
+          joystick.strength = 0;
+          mouseControl = false;
+
+          // ریست کردن کلیدهای کیبورد
+          keys.ArrowUp = false;
+          keys.ArrowDown = false;
+          keys.ArrowLeft = false;
+          keys.ArrowRight = false;
+          keys.Space = false;
+          isNitroButtonPressed = false;
+
+          // ریست وضعیت مسابقه (بدون تغییر اطلاعات دائمی)
+          player.lap = 0;
+          player.finished = false;
+          player.bestLap = Infinity;
+          player.currentLapTime = 0;
+          player.totalTime = 0;
+          player.velX = 0;
+          player.velY = 0;
+          player.lastGateSide = 0;
+          player.stopPosition = null;
+          player.nitroEffect = false;
+
+          // تنظیم نیترو بر اساس سطح فعلی
+          playerNitroRemaining = getCurrentNitroMax();
+
+          currentRaceCoins = 0;
+          currentRaceBotCoins = [0, 0, 0];
+
+          for (let i = 0; i < bots.length; i++) {
+            bots[i].lap = 0;
+            bots[i].finished = false;
+            bots[i].bestLap = Infinity;
+            bots[i].lastLapTime = 0;
+            bots[i].totalTime = 0;
+            bots[i].velX = 0;
+            bots[i].velY = 0;
+            bots[i].lastGateSide = 0;
+            bots[i].currentBoost = 1.0;
+            bots[i].boostTimer = Math.floor(Math.random() * 30);
+            bots[i].stopPosition = null;
+            bots[i].nitroEffect = false;
+
+            // تنظیم نیترو بر اساس سطح ارتقای ربات
+            const botNitroMax = bots[i].customNitroMax || BASE_NITRO_MAX;
+            bots[i].totalNitroRemaining = botNitroMax;
+            bots[i].currentNitroDuration = 0;
+            bots[i].nitroCooldown = 20 + Math.random() * 40;
+            bots[i].nitroActive = false;
+          }
+
+          gateState = { player: false };
+          lastSide = { player: 0 };
+          for (let i = 0; i < BOT_COUNT; i++) {
+            gateState[`bot${i}`] = false;
+            lastSide[`bot${i}`] = 0;
+          }
+
+          resetPositions();
+          updateUI();
+          document.getElementById("finishedCountDisplay").innerHTML =
+            `0/${TOTAL_RACERS}`;
+          updateNitroButtonUI();
+          updateCoinDisplay();
+
+          startCountdown(() => {
+            raceFinished = false;
+            timerRunning = false;
+            globalStartTime = performance.now();
+            player.currentLapStart = performance.now();
+            for (let i = 0; i < bots.length; i++) {
+              bots[i].currentLapStart = performance.now();
+            }
+          });
+        }
+
+        // ==================== GAME LOOP ====================
+        let lastTime = 0;
+        function gameLoop(now) {
+          // اگر در منوی اصلی هستیم، فقط درخواست فریم بعدی را بده
+          if (isMainMenu) {
+            // بررسی دوره‌ای ارتقای ربات‌ها در منوی اصلی
+            autoUpgradeBotsInMenu(now);
+
+            requestAnimationFrame(gameLoop);
+            return;
+          }
+
+          if (!lastTime) lastTime = now;
+
+          // اگر بازی در حالت pause است، فقط UI را بروزرسانی کن (بدون فیزیک)
+          if (isPaused) {
+            // رسم مسیر
+            drawTrack();
+
+            // رسم بات‌ها
+            for (let bot of bots) {
+              drawCar(bot.x, bot.y, bot.angle, bot.color, false, bot.finished);
+              if (bot.nitroEffect && !bot.finished && raceActive)
+                drawFlames(bot.x, bot.y, bot.angle);
+            }
+
+            // رسم بازیکن
+            drawCar(
+              player.x,
+              player.y,
+              player.angle,
+              "#ff5533",
+              true,
+              player.finished,
+            );
+            if (player.nitroEffect && !player.finished && raceActive)
+              drawFlames(player.x, player.y, player.angle);
+
+            // رسم جوی استیک
+            drawJoystickUI();
+
+            // نمایش متن Paused روی صفحه
+            ctx.font = "bold 42px 'Segoe UI', 'Poppins', system-ui";
+            ctx.fillStyle = "#ffcc88";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "rgba(0,0,0,0.8)";
+            ctx.textAlign = "center";
+            ctx.fillText("⏸ PAUSED", W / 2, H / 2 - 60);
+            ctx.font = "20px monospace";
+            ctx.fillStyle = "#aaaaff";
+            ctx.fillText("Click RESUME to continue racing", W / 2, H / 2 + 20);
+            ctx.font = "14px monospace";
+            ctx.fillStyle = "#ff8866aa";
+            ctx.fillText("Press ESC or tap PAUSE button", W / 2, H / 2 + 60);
+            ctx.shadowBlur = 0;
+            ctx.textAlign = "left";
+
+            requestAnimationFrame(gameLoop);
+            return;
+          }
+
+          const delta = Math.min(33, now - lastTime);
+          lastTime = now;
+
+          const control = getControlVector();
+
+          // ========== آپدیت فیزیک بازی ==========
+          if (raceActive && !raceFinished) {
+            // حرکت بازیکن
+            if (!player.finished && control.active) {
+              const angleJoy = Math.atan2(control.y, control.x);
+              let accMultiplier = 1.0;
+              let nitroCurrentlyActive = false;
+
+              if (
+                isNitroButtonPressed &&
+                playerNitroRemaining > 0 &&
+                raceActive &&
+                !player.finished
+              ) {
+                nitroCurrentlyActive = true;
+                playerNitroRemaining--;
+                accMultiplier = NITRO_MULTIPLIER;
+                updateNitroButtonUI();
+                if (playerNitroRemaining <= 0) isNitroButtonPressed = false;
+              }
+
+              player.nitroEffect = nitroCurrentlyActive;
+              player.velX +=
+                Math.cos(angleJoy) *
+                BASE_ACC *
+                control.strength *
+                accMultiplier;
+              player.velY +=
+                Math.sin(angleJoy) *
+                BASE_ACC *
+                control.strength *
+                accMultiplier;
+
+              const targetAngle = (angleJoy * 180) / Math.PI;
+              let diff = targetAngle - player.angle;
+              if (diff > 180) diff -= 360;
+              if (diff < -180) diff += 360;
+              player.angle += diff * 0.19;
+            } else if (!player.finished) {
+              player.velX *= 1 - FRICTION;
+              player.velY *= 1 - FRICTION;
+              if (!isNitroButtonPressed) player.nitroEffect = false;
+            }
+
+            // محدودیت سرعت بازیکن
+            if (!player.finished) {
+              let spd = Math.hypot(player.velX, player.velY);
+              let currentMaxSpeed = getCurrentMaxSpeed(); // استفاده از تابع جدید
+              if (player.nitroEffect)
+                currentMaxSpeed = getCurrentMaxSpeed() * NITRO_SPEED_MULTIPLIER;
+              if (spd > currentMaxSpeed) {
+                player.velX = (player.velX * currentMaxSpeed) / spd;
+                player.velY = (player.velY * currentMaxSpeed) / spd;
+              }
+
+              let newX = player.x + player.velX;
+              let newY = player.y + player.velY;
+              let col = handleCollisionWithWall(player, newX, newY);
+              player.x = col.x;
+              player.y = col.y;
+              player.velX = col.vx;
+              player.velY = col.vy;
+            }
+
+            // آپدیت بات‌ها
+            for (let i = 0; i < bots.length; i++)
+              updateBot(bots[i], `bot${i}`, now);
+
+            // برخورد بازیکن با بات‌ها
+            for (let i = 0; i < bots.length; i++)
+              if (!bots[i].finished && !player.finished)
+                handleCarCollision(player, bots[i]);
+
+            // برخورد بات‌ها با هم
+            for (let i = 0; i < bots.length; i++)
+              for (let j = i + 1; j < bots.length; j++)
+                if (!bots[i].finished || !bots[j].finished)
+                  handleCarCollision(bots[i], bots[j]);
+
+            // بروزرسانی دور برای بازیکن
+            updateLapForEntity(player, "player", now, true);
+          }
+
+          // ========== رسم صحنه ==========
+          drawTrack();
+
+          // رسم بات‌ها
+          for (let bot of bots) {
+            drawCar(bot.x, bot.y, bot.angle, bot.color, false, bot.finished);
+            if (bot.nitroEffect && !bot.finished && raceActive)
+              drawFlames(bot.x, bot.y, bot.angle);
+          }
+
+          // رسم بازیکن
+          drawCar(
+            player.x,
+            player.y,
+            player.angle,
+            "#ff5533",
+            true,
+            player.finished,
+          );
+          if (player.nitroEffect && !player.finished && raceActive)
+            drawFlames(player.x, player.y, player.angle);
+
+          // رسم جوی استیک
+          drawJoystickUI();
+
+          requestAnimationFrame(gameLoop);
+        }
+
+        // ==================== SETUP ====================
+        function setup() {
+          initGame();
+
+          // مخفی کردن UI بازی در ابتدا
+          document
+            .querySelector(".stats-panel")
+            .classList.add("game-ui-hidden");
+          document
+            .getElementById("nitroButton")
+            .classList.add("game-ui-hidden");
+          document.getElementById("pauseBtn").classList.add("game-ui-hidden");
+          document
+            .getElementById("fullscreenBtn")
+            .classList.add("game-ui-hidden");
+
+          // نمایش منوی اصلی
+          document.getElementById("mainMenu").style.display = "block";
+          document.getElementById("fullscreenMenuBtn").style.display = "flex";
+          document.querySelector(".menu-coins").style.display = "flex";
+
+          // بروزرسانی نمایش سکه
+          updateMenuCoinDisplay();
+
+          // شروع انیمیشن ماشین
+          drawMainMenuCar();
+
+          // دکمه استارت
+          const startBtn = document.getElementById("startGameBtn");
+          if (startBtn) {
+            startBtn.addEventListener("click", () => {
+              hideMainMenu();
+            });
+          }
+
+          // دکمه فول اسکرین در منو
+          const fullscreenMenuBtn =
+            document.getElementById("fullscreenMenuBtn");
+          if (fullscreenMenuBtn) {
+            fullscreenMenuBtn.addEventListener("click", toggleFullscreen);
+          }
+
+          // دکمه ارتقا
+          const upgradeBtn = document.getElementById("upgradeBtn");
+          if (upgradeBtn) {
+            upgradeBtn.addEventListener("click", () => {
+              if (isMainMenu) {
+                showUpgradeConfirm();
+              }
+            });
+          }
+
+          // دکمه ریست کامل
+          const resetAllBtn = document.getElementById("resetAllBtn");
+          if (resetAllBtn) {
+            resetAllBtn.addEventListener("click", () => {
+              if (isMainMenu) {
+                showResetConfirm();
+              }
+            });
+          }
+
+          // دکمه فول اسکرین در بازی
+          const fullscreenBtn = document.getElementById("fullscreenBtn");
+          if (fullscreenBtn) {
+            fullscreenBtn.addEventListener("click", toggleFullscreen);
+          }
+
+          // دکمه Pause در بازی
+          const pauseBtn = document.getElementById("pauseBtn");
+          if (pauseBtn) {
+            pauseBtn.addEventListener("click", () => {
+              if (raceActive && !raceFinished && !isPaused) {
+                showPauseMenu();
+              }
+            });
+          }
+
+          // دکمه نیترو
+          const nitroBtn = document.getElementById("nitroButton");
+          if (nitroBtn) {
+            const activateNitro = (e) => {
+              e.preventDefault();
+              if (
+                raceActive &&
+                !player.finished &&
+                joystick.enabled &&
+                playerNitroRemaining > 0
+              )
+                isNitroButtonPressed = true;
+            };
+            const deactivateNitro = (e) => {
+              e.preventDefault();
+              isNitroButtonPressed = false;
+            };
+            nitroBtn.addEventListener("mousedown", activateNitro);
+            nitroBtn.addEventListener("mouseup", deactivateNitro);
+            nitroBtn.addEventListener("mouseleave", deactivateNitro);
+            nitroBtn.addEventListener("touchstart", activateNitro, {
+              passive: false,
+            });
+            nitroBtn.addEventListener("touchend", deactivateNitro);
+            nitroBtn.addEventListener("touchcancel", deactivateNitro);
+          }
+
+          // رویدادهای کیبورد
+          window.addEventListener("keydown", handleKeyDown);
+          window.addEventListener("keyup", handleKeyUp);
+
+          // رویدادهای موس و تاچ برای جوی استیک
+          canvas.addEventListener("mousedown", onStart);
+          window.addEventListener("mousemove", onMove);
+          window.addEventListener("mouseup", onEnd);
+          canvas.addEventListener("touchstart", onStart, { passive: false });
+          canvas.addEventListener("touchmove", onMove, { passive: false });
+          canvas.addEventListener("touchend", onEnd);
+
+          // رویداد resize
+          window.addEventListener("resize", () => {
+            if (!isMainMenu) {
+              initGame();
+              checkOrientation();
+              if (
+                !raceActive &&
+                !document.querySelector(".countdown-overlay") &&
+                !document.querySelector(".message-overlay") &&
+                !(window.innerHeight > window.innerWidth)
+              ) {
+                startCountdown(() => {
+                  raceActive = true;
+                  raceFinished = false;
+                  timerRunning = false;
+                  globalStartTime = performance.now();
+                  player.currentLapStart = performance.now();
+                  for (let i = 0; i < bots.length; i++)
+                    bots[i].currentLapStart = performance.now();
+                });
+              }
+            }
+          });
+
+          // بررسی orientation
+          window.addEventListener("resize", checkOrientation);
+          checkOrientation();
+
+          // شروع حلقه بازی
+          requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener("mousedown", onStart);
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onEnd);
+        canvas.addEventListener("touchstart", onStart, { passive: false });
+        canvas.addEventListener("touchmove", onMove, { passive: false });
+        canvas.addEventListener("touchend", onEnd);
+        window.addEventListener("resize", () => {
+          initGame();
+          checkOrientation();
+          if (
+            !raceActive &&
+            !document.querySelector(".countdown-overlay") &&
+            !document.querySelector(".message-overlay") &&
+            !(window.innerHeight > window.innerWidth)
+          ) {
+            startCountdown(() => {
+              raceActive = true;
+              raceFinished = false;
+              timerRunning = false;
+              globalStartTime = performance.now();
+              player.currentLapStart = performance.now();
+              for (let i = 0; i < bots.length; i++)
+                bots[i].currentLapStart = performance.now();
+            });
+          }
+        });
+        setup();
+      })();
+    </script>
+  </body>
+</html>
